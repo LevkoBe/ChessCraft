@@ -1,3 +1,6 @@
+from typing import List
+
+
 class ChessPiece:
     def __init__(self, name, symbol, h_move_formula, v_move_formula, a_values, b_values, extr):
         self.name = name
@@ -121,13 +124,15 @@ def main():
     extreme_value = max(columns, rows)
 
     while True:
-        action = input("Enter 'add' to add a piece, 'next' to continue: ")
+        action = input("Enter 'add' to add a piece, 'next' to continue, or 'quit' to end the game: ")
         if action == 'add':
             piece = add_piece(extreme_value)
             pieces.append(piece)
             print(f"{piece.name} added successfully.")
         elif action == 'next':
             break
+        elif action == 'quit':
+            return
         else:
             print("Invalid command. Please try again.")
 
@@ -143,11 +148,41 @@ def main():
 
     board.render_board()
 
+    player_turn = '-'
     while True:
-        move = input("Enter the position of the piece you want to move: ")
+        move = input(f"Enter the position of the {player_turn} piece you want to move (or 'quit' to end the game): ")
+        if move == 'quit':
+            return
+
+        row, col = board.position_to_indices(move)
+
+        if not board.is_valid_position(row, col):
+            print("Invalid position. Please try again.")
+            continue
+
+        board_piece = board.board[row][col]
+
+        if board_piece is None or board_piece.color != player_turn:
+            print(f"No {player_turn} piece at the specified position. Please try again.")
+            continue
+
         possible_moves = board.get_possible_moves(move)
-        print("Possible moves:", possible_moves)
+        print(f"Possible moves: {possible_moves}")
+
+        if possible_moves:
+            target_move = input("Enter the position you want to move the piece to: ")
+            if target_move in possible_moves:
+                new_row, new_col = board.position_to_indices(target_move)
+                board.board[new_row][new_col] = board_piece
+                board.board[row][col] = None
+                player_turn = '+' if player_turn == '-' else '-'  # Switch player's turn
+            else:
+                print("Invalid move. Please try again.")
+        else:
+            print("No possible moves. Please try again.")
+
+        board.render_board()
 
 if __name__ == "__main__":
-    pieces: ChessPiece = []
+    pieces: List[ChessPiece] = []
     main()
