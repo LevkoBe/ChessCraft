@@ -29,9 +29,9 @@ def play_game(board: ChessBoard, pieces: List[ChessPiece]):
             continue
 
         possible_moves = board.get_possible_moves(move, pieces)
-        print(f"Possible moves: {possible_moves}")
 
         if possible_moves:
+            print(f"Possible moves: {possible_moves}")
             target_move = input("Enter the position you want to move the piece to: ")
             if target_move in possible_moves:
                 new_row, new_col = board.position_to_indices(target_move)
