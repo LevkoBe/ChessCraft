@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from ChessBoard import ChessBoard
 from ChessPiece import ChessPiece
@@ -43,4 +43,18 @@ def add_piece() -> ChessPiece:
     steps = input("Please, enter the maximum number of steps in any direction: ")
 
     return ChessPiece(name, symbol, directions, steps)
+
+
+def white_black_division(board: ChessBoard):
+    white_pieces: List[Tuple[str, int, int]] = []
+    black_pieces: List[Tuple[str, int, int]] = []
+    for row in range(board.rows):
+        for col in range(board.columns):
+            piece = board.board[row][col]
+            if piece is not None:
+                if piece.color == '-':
+                    white_pieces.append((piece.piece, row, col))
+                else:
+                    black_pieces.append((piece.piece, row, col))
+    return white_pieces, black_pieces
 
