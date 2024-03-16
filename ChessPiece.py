@@ -1,25 +1,20 @@
+from typing import List, Tuple
+
+
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, h_move_formula: str, v_move_formula: str, a_values: str, b_values: str, extr: int):
+    def __init__(self, name: str, symbol: str, directions: List[str], steps: str):
         self.name = name
         self.symbol = symbol
-        self.h_move_formula = h_move_formula
-        self.v_move_formula = v_move_formula
-        self.a_values = self.get_values(a_values, extr)
-        self.b_values = self.get_values(b_values, extr)
+        self.directions: List[Tuple[int, int]] = self.get_directions(directions)  
+        self.max_steps: int = int(steps)
 
-    # "c:c/c,c,c,c" or "+-/c,c,c"
-    def get_values(self, formula: str, extr: int) -> list:
-        if formula == "":
-            return [1]
-
-        take, *remove = formula.split('/')
-        if len(take) >= 2 and take[:2] == "+-":
-            min_value, max_value = -extr, extr
-        else:
-            min_value, max_value = map(int, take.split(':'))
-
-        if remove:
-            rem_values = list(map(int, remove[0].split(',')))
-        else:
-            rem_values = []
-        return [value for value in range(min_value, max_value + 1) if value not in rem_values]
+    def get_directions(self, directions_list: List[str]) -> List[Tuple[int, int]]:
+        directions: List[Tuple[int, int]] = []
+        for directions_string in directions_list:
+            if len(directions_string) == 2:
+                x = 1 if directions_string[0] == '+' else -1 if directions_string[0] == '-' else 0
+                y = 1 if directions_string[1] == '+' else -1 if directions_string[1] == '-' else 0
+                directions.append((x, y))
+            else:
+                directions.append(tuple(map(int, directions_string.split(','))))
+        return directions

@@ -45,19 +45,21 @@ class ChessBoard:
         if piece is None:
             return []
 
-        v_formula, h_formula = piece.v_move_formula, piece.h_move_formula
-        a_values, b_values = piece.a_values, piece.b_values
-
         possible_moves = []
-
-        for a in a_values:
-            for b in b_values:
-                v_steps = eval(v_formula.replace('a', str(a)).replace('b', str(b)))
-                h_steps = eval(h_formula.replace('a', str(a)).replace('b', str(b)))
-                new_row = row + (1 if board_piece.color == '+' else -1) * v_steps
-                new_col = col + h_steps
-                if self.is_valid_position(new_row, new_col):
-                    possible_moves.append(self.indices_to_position(new_row, new_col))
+        
+        for di in piece.directions:
+            steps_made = 0
+            current_row = row
+            current_col = col
+            while steps_made < piece.max_steps:
+                steps_made += 1
+                new_row = current_row + (1 if board_piece.color == '+' else -1) * di[0]
+                new_col = current_col + di[1]
+                if not self.is_valid_position(new_row, new_col):
+                    break
+                possible_moves.append(self.indices_to_position(new_row, new_col))
+                current_row = new_row
+                current_col = new_col
         return possible_moves
 
     def position_to_indices(self, position: str) -> tuple:
