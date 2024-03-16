@@ -46,7 +46,7 @@ def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, i
         pygame.draw.rect(screen, HIGHLIGHT_COLOR, (col * square_size, row * square_size, square_size, square_size), 3)
 
 
-def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn: str, selected_square: Tuple[int, int], possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]]) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
+def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn: str, selected_square: Tuple[int, int], possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], special: str) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     clicked_row = mouse_y // square_size
     clicked_col = mouse_x // square_size
@@ -85,10 +85,6 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
         player_turn = '+' if player_turn == '-' else '-'
         selected_square = None
         possible_moves = []
-        print(white_pieces, black_pieces)
-        if white_pieces == [] or black_pieces == []:
-            print("Someone won!")
-            return possible_moves, player_turn, selected_square, white_pieces, black_pieces
     else:
         print(f"Invalid move from {selected_square} to ({clicked_row}, {clicked_col})")
         selected_square = None
@@ -129,11 +125,12 @@ def main():
 
     pieces: List[ChessPiece] = setup_pieces(rows, columns)
     board: ChessBoard = setup_board(rows, columns)
+    special: str = input("Please, tell which pieces should be captured to win the game (character): ")
     white_pieces, black_pieces = white_black_division(board)
 
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Chess Game")
+    pygame.display.set_caption("NO-Chess Game")
 
     clock = pygame.time.Clock()
 
@@ -146,7 +143,13 @@ def main():
             if event.type == QUIT:
                 running = False
             elif event.type == MOUSEBUTTONDOWN:
-                possible_moves, player_turn, selected_square, white_pieces, black_pieces = process_mouse_click(board, pieces, player_turn, selected_square, possible_moves, white_pieces, black_pieces)
+                possible_moves, player_turn, selected_square, white_pieces, black_pieces = process_mouse_click(board, pieces, player_turn, selected_square, possible_moves, white_pieces, black_pieces, special)
+        if special not in [p[0] for p in white_pieces]:
+            print("Second player won!")
+            break
+        if special not in [p[0] for p in black_pieces]:
+            print("First player won!")
+            break
 
         screen.fill(BACKGROUND_COLOR)
         numerical_possible_moves = [board.position_to_indices(move) for move in possible_moves] if possible_moves else []

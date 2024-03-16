@@ -37,10 +37,10 @@ def setup_board(rows: int, columns: int) -> ChessBoard:
 
 
 def add_piece() -> ChessPiece:
-    name = input("Please enter the name of the piece: ")
-    symbol = input("Please enter the character to represent the piece: ")
-    directions = input("Please enter the possible directions of moves (++, or +2,-3 format): ").split(' ')
-    steps = input("Please enter the maximum number of steps in any direction: ")
+    name = input("Please, enter the name of the piece: ")
+    symbol = input("Please, enter the character to represent the piece: ")
+    directions = input("Please, enter the possible directions of moves (++, or +2,-3 format): ").split(' ')
+    steps = input("Please, enter the maximum number of steps in any direction: ")
 
     return ChessPiece(name, symbol, directions, steps)
 
