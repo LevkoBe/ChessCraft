@@ -58,8 +58,12 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
             print(f"No {player_turn} piece at the specified position. Please try again.")
             return possible_moves, player_turn, selected_square
         selected_square = (clicked_row, clicked_col)
-        move = board.indices_to_position(clicked_row, clicked_col)
-        possible_moves = board.get_possible_moves(move, pieces)
+        position = board.indices_to_position(clicked_row, clicked_col)
+        possible_moves = board.get_possible_moves(position, pieces)
+        if not possible_moves:
+            print(f"No possible moves from {selected_square} to ({clicked_row}, {clicked_col})")
+            selected_square = None
+            return possible_moves, player_turn, selected_square
         print(f"Possible moves: {possible_moves}")
     elif board.indices_to_position(clicked_row, clicked_col) in possible_moves:
         print(f"Move from {selected_square} to ({clicked_row}, {clicked_col})")

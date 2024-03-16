@@ -8,7 +8,7 @@ class ChessBoard:
     def __init__(self, rows: int, columns: int):
         self.rows = rows
         self.columns = columns
-        self.board = [[None for _ in range(columns)] for _ in range(rows)]
+        self.board: List[List[ChessBoardPiece]] = [[None for _ in range(columns)] for _ in range(rows)]
 
     def place_piece(self, row: int, col: int, piece: str, color: str):
         self.board[row][col] = ChessBoardPiece(piece, color)
@@ -31,7 +31,7 @@ class ChessBoard:
         if not self.is_valid_position(row, col):
             return []
 
-        board_piece = self.board[row][col]
+        board_piece: ChessPiece = self.board[row][col]
         if board_piece is None:
             return []
 
@@ -57,9 +57,17 @@ class ChessBoard:
                 new_col = current_col + di[1]
                 if not self.is_valid_position(new_row, new_col):
                     break
-                possible_moves.append(self.indices_to_position(new_row, new_col))
-                current_row = new_row
-                current_col = new_col
+                target_square = self.board[new_row][new_col]
+                if target_square is None:
+                    possible_moves.append(self.indices_to_position(new_row, new_col))
+                    current_row = new_row
+                    current_col = new_col
+                    continue
+                if target_square.color == board_piece.color:
+                    break
+                if target_square.color != board_piece.color:
+                    possible_moves.append(self.indices_to_position(new_row, new_col))
+                    break
         return possible_moves
 
     def position_to_indices(self, position: str) -> tuple:
