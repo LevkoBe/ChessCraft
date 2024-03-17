@@ -1,11 +1,12 @@
 from typing import List, Tuple
 
 from ChessBoard import ChessBoard
+from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 from UserSupervisor import string_input, list_input
 
 
-def setup_pieces(rows: int, columns: int) -> List[ChessPiece]:
+def setup_pieces() -> List[ChessPiece]:
     pieces: List[ChessPiece] = []
     while True:
         action = string_input("Enter 'add' to add a piece, 'next' to continue, or 'quit' to end the game: ", input_type="select", options=["add", "next", "quit"])
@@ -31,7 +32,7 @@ def setup_board(rows: int, columns: int, pieces: List[str]) -> ChessBoard:
         color = "+" if i <= rows // 2 else "-"
         for j in range(columns):
             if j < len(row_input) and row_input[j]:
-                board.place_piece(i, j, row_input[j], color)
+                board.board[i][j] = ChessBoardPiece(row_input[j], color)
             else:
                 board.board[i][j] = None
     return board
