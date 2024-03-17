@@ -2,14 +2,15 @@ from typing import List, Tuple
 
 from ChessBoard import ChessBoard
 from ChessPiece import ChessPiece
+from UserSupervisor import string_input, list_input
 
 
 def setup_pieces(rows: int, columns: int) -> List[ChessPiece]:
     pieces: List[ChessPiece] = []
     while True:
-        action = input("Enter 'add' to add a piece, 'next' to continue, or 'quit' to end the game: ")
+        action = string_input("Enter 'add' to add a piece, 'next' to continue, or 'quit' to end the game: ", input_type="select", options=["add", "next", "quit"])
         if action == 'add':
-            piece = add_piece()
+            piece = add_piece([p.symbol for p in pieces])
             pieces.append(piece)
             print(f"{piece.name} added successfully.")
         elif action == 'next':
@@ -21,26 +22,26 @@ def setup_pieces(rows: int, columns: int) -> List[ChessPiece]:
     return pieces
 
 
-def setup_board(rows: int, columns: int) -> ChessBoard:
+def setup_board(rows: int, columns: int, pieces: List[str]) -> ChessBoard:
     board = ChessBoard(rows, columns)
     
     print("Please fill the board with the figures:")
     for i in range(rows):
-        row_input = input().split()
+        row_input = list_input("", "select", options=pieces + [''])
         color = "+" if i <= rows // 2 else "-"
         for j in range(columns):
-            if j < len(row_input):
+            if j < len(row_input) and row_input[j]:
                 board.place_piece(i, j, row_input[j], color)
             else:
                 board.board[i][j] = None
     return board
 
 
-def add_piece() -> ChessPiece:
+def add_piece(pieces: List[str]) -> ChessPiece:
     name = input("Please, enter the name of the piece: ")
-    symbol = input("Please, enter the character to represent the piece: ")
-    directions = input("Please, enter the possible directions of moves (++, or +2,-3 format): ").split(' ')
-    steps = input("Please, enter the maximum number of steps in any direction: ")
+    symbol = string_input("Please, enter the character to represent the piece: ", "regex", options=r"^.$", prohibited=pieces)
+    directions = list_input("Please, enter the possible directions of moves (++, or +2,-3 format): ", "regex", options=r"^[+-0][+-0]$|^[+-]\d+,[+-]\d+$")
+    steps = int(string_input("Please, enter the maximum number of steps in any direction: ", "regex", options=r"^\d+$"))
 
     return ChessPiece(name, symbol, directions, steps)
 
