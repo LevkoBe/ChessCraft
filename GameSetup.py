@@ -43,8 +43,9 @@ def add_piece(pieces: List[str]) -> ChessPiece:
     symbol = string_input("Please, enter the character to represent the piece: ", "regex", options=r"^.$", prohibited=pieces)
     directions = list_input("Please, enter the possible directions of moves (++, or +2,-3 format): ", "regex", options=r"^[+-0][+-0]$|^[+-]\d+,[+-]\d+$")
     steps = int(string_input("Please, enter the maximum number of steps in any direction: ", "regex", options=r"^\d+$"))
+    optional = list_input("Optional parameters: ", "select", options=['n', 'p', 'c', ''])
 
-    return ChessPiece(name, symbol, directions, steps)
+    return ChessPiece(name, symbol, directions, steps, optional)
 
 
 def white_black_division(board: ChessBoard):

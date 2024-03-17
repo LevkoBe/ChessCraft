@@ -2,11 +2,14 @@ from typing import List, Tuple
 
 
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, directions: List[str], steps: str):
+    def __init__(self, name: str, symbol: str, directions: List[str], steps: str, optional: List[str]):
         self.name = name
         self.symbol = symbol
         self.directions: List[Tuple[int, int]] = self.get_directions(directions)  
         self.max_steps: int = int(steps)
+        self.ninja: bool = 'n' in optional
+        self.promotion: bool = 'p' in optional
+        self.cloning: bool = 'c' in optional
 
     def get_directions(self, directions_list: List[str]) -> List[Tuple[int, int]]:
         directions: List[Tuple[int, int]] = []

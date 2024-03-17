@@ -64,7 +64,9 @@ def set_window_dimensions(rows: int, columns: int):
     return screen_width, screen_height
 
 
-def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn: str, selected_square: Tuple[int, int], possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]]) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
+def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn: str, selected_square: Tuple[int, int], \
+                        possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], \
+                        black_pieces: List[Tuple[str, int, int]], optional: str) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     clicked_row = mouse_y // square_size
     clicked_col = mouse_x // square_size
@@ -72,11 +74,12 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
 
     # select piece
     if selected_square is None:
-        possible_moves, selected_square = board.select_piece(pieces, player_turn, clicked_row, clicked_col)
+        possible_moves, selected_square, optional = board.select_piece(pieces, player_turn, clicked_row, clicked_col)
 
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
-        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col)
+        pieces_chars = [p.symbol for p in pieces]
+        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, optional, pieces_chars)
         player_turn = '+' if player_turn == '-' else '-'
         selected_square = None
         possible_moves = []
@@ -86,7 +89,7 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
         selected_square = None
         possible_moves = []
 
-    return possible_moves, player_turn, selected_square, white_pieces, black_pieces
+    return possible_moves, player_turn, selected_square, white_pieces, black_pieces, optional
 
 
 def play_game(game: Gameset):
@@ -100,6 +103,7 @@ def play_game(game: Gameset):
 
     player_turn = '-'
     running = True
+    optional = ""
     selected_square: Tuple[int, int] = None
     possible_moves: List[Tuple[int, int]] = []
     white_pieces, black_pieces = white_black_division(game.board)
@@ -109,8 +113,9 @@ def play_game(game: Gameset):
             if event.type == QUIT:
                 running = False
             elif event.type == MOUSEBUTTONDOWN:
-                possible_moves, player_turn, selected_square, white_pieces, black_pieces = \
-                    process_mouse_click(game.board, game.pieces, player_turn, selected_square, possible_moves, white_pieces, black_pieces)
+                possible_moves, player_turn, selected_square, white_pieces, black_pieces, optional = \
+                    process_mouse_click(game.board, game.pieces, player_turn, selected_square, \
+                                        possible_moves, white_pieces, black_pieces, optional)
         
         # check winners
         if game.special not in [p[0] for p in white_pieces]:
