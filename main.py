@@ -11,6 +11,8 @@ def main():
             game = Gameset()
             play_game(game)
         elif action == 'choose':
+            # import the game
+            print("Not implemented.")
             pass
         elif action == 'exit':
             return

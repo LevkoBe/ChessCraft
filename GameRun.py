@@ -70,15 +70,18 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
     clicked_col = mouse_x // square_size
     print(f"Clicked on square ({clicked_row}, {clicked_col})")
 
+    # select piece
     if selected_square is None:
         possible_moves, selected_square = board.select_piece(pieces, player_turn, clicked_row, clicked_col)
 
+    # move piece
     elif (clicked_row, clicked_col) in possible_moves:
         white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col)
         player_turn = '+' if player_turn == '-' else '-'
         selected_square = None
         possible_moves = []
     else:
+        # unselect piece
         print(f"Invalid move from {selected_square} to ({clicked_row}, {clicked_col})")
         selected_square = None
         possible_moves = []
@@ -101,12 +104,15 @@ def play_game(game: Gameset):
     possible_moves: List[Tuple[int, int]] = []
     white_pieces, black_pieces = white_black_division(game.board)
     while running:
+        # move pieces
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == MOUSEBUTTONDOWN:
                 possible_moves, player_turn, selected_square, white_pieces, black_pieces = \
                     process_mouse_click(game.board, game.pieces, player_turn, selected_square, possible_moves, white_pieces, black_pieces)
+        
+        # check winners
         if game.special not in [p[0] for p in white_pieces]:
             print("Second player won!")
             break
@@ -114,6 +120,7 @@ def play_game(game: Gameset):
             print("First player won!")
             break
 
+        # render board
         screen.fill(BACKGROUND_COLOR)
         render_board(screen, game.board, game.board.rows, game.board.columns, possible_moves, selected_square)
         pygame.display.flip()

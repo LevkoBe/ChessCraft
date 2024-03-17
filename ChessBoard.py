@@ -11,18 +11,19 @@ class ChessBoard:
         self.board: List[List[ChessBoardPiece]] = [[None for _ in range(columns)] for _ in range(rows)]
 
     def get_possible_moves(self, position: Tuple[int, int], piece: ChessPiece) -> List[str]:
+        
+        # validation
         row, col = (position)
         if not self.is_valid_position(row, col):
             return []
-
         board_piece: ChessPiece = self.board[row][col]
         if board_piece is None or piece is None:
             return []
 
         possible_moves: List[Tuple[int, int]] = []
         
-        for di in piece.directions:
-            steps_made = 0
+        for di in piece.directions:     # in each direction
+            steps_made = 0              # we can move X steps
             current_row = row
             current_col = col
             while steps_made < piece.max_steps:
@@ -45,10 +46,14 @@ class ChessBoard:
         return possible_moves
 
     def select_piece(self, pieces: List[ChessPiece], player_turn: str, clicked_row: int, clicked_col: int):
+        
+        # validation
         board_square = self.board[clicked_row][clicked_col]
         if board_square is None or board_square.color != player_turn:
             print(f"No {player_turn} piece at the specified position. Please try again.")
             return [], None
+        
+        # initialization
         piece = None
         for p in pieces:
             if p.symbol == board_square.piece:
@@ -59,9 +64,10 @@ class ChessBoard:
         if not possible_moves:
             print(f"No possible moves from ({clicked_row}, {clicked_col})")
             return possible_moves, None
-        selected_square = (clicked_row, clicked_col)
-        print(f"Possible moves: {possible_moves}")
 
+        # selection
+        print(f"Possible moves: {possible_moves}")
+        selected_square = (clicked_row, clicked_col)
         return possible_moves, selected_square
 
     def move_piece(self, selected_square: Tuple[int, int], white_pieces: List[Tuple[str, int, int]], \
