@@ -1,14 +1,27 @@
-from typing import List, Tuple
-
+from typing import List, Dict, Tuple, Any
 from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 
 
 class ChessBoard:
-    def __init__(self, rows: int, columns: int):
+    def __init__(self, rows: int, columns: int, board: List[List[ChessBoardPiece]]=None):
         self.rows = rows
         self.columns = columns
-        self.board: List[List[ChessBoardPiece]] = [[None for _ in range(columns)] for _ in range(rows)]
+        self.board: List[List[ChessBoardPiece]] = board if board else [[None for _ in range(columns)] for _ in range(rows)]
+
+    def to_json(self):
+        return {
+            "rows": self.rows,
+            "columns": self.columns,
+            "board": [[str(piece) if piece else None for piece in row] for row in self.board]
+        }
+    
+    @classmethod
+    def from_json(cls, json_data):
+        rows = json_data['rows']
+        columns = json_data['columns']
+        board = [[ChessBoardPiece.from_string(piece) if piece else None for piece in row] for row in json_data['board']]
+        return cls(rows, columns, board)
 
     def get_possible_moves(self, position: Tuple[int, int], piece: ChessPiece) -> List[str]:
         

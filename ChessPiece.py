@@ -2,11 +2,21 @@ from typing import List, Tuple
 
 
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, directions: List[str], steps: str):
+    def __init__(self, name: str, symbol: str, directions: List[str], max_steps: str):
         self.name = name
         self.symbol = symbol
         self.directions: List[Tuple[int, int]] = self.get_directions(directions)  
-        self.max_steps: int = int(steps)
+        self.max_steps: int = int(max_steps)
+
+    def to_string(self) -> str:
+        directions_str = ' '.join([f"{('+' if d[0] >= 0 else '')}{d[0]},{('+' if d[1] >= 0 else '')}{d[1]}" for d in self.directions])
+        return f"{self.name};{self.symbol};{directions_str};{self.max_steps}"
+
+    @classmethod
+    def from_string(cls, piece_string: str):
+        name, symbol, directions_str, max_steps = piece_string.split(';')
+        directions = [dir_str for dir_str in directions_str.split(' ')]
+        return cls(name, symbol, directions, max_steps)
 
     def get_directions(self, directions_list: List[str]) -> List[Tuple[int, int]]:
         directions: List[Tuple[int, int]] = []
