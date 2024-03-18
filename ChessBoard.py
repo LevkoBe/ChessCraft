@@ -53,34 +53,34 @@ class ChessBoard:
         possible_moves: List[Tuple[int, int]] = []
         board_piece: ChessBoardPiece = self.board[row][col]
 
-        # todo: wrap into this function, remove directions from parameters
-        self.next_moves(board_piece.color, row, col, piece.directions, piece.max_steps, possible_moves)
+        def next_moves(row: int, col: int, steps_left: int):
+            if steps_left == 0:
+                return
+            for di in piece.directions:
+                # validation
+                new_row = row + (1 if board_piece.color == '+' else -1) * di[0]
+                new_col = col + di[1]
+                if not self.is_valid_position(new_row, new_col) or (new_row, new_col) in possible_moves:
+                    continue
+
+                # recursion
+                target_square = self.board[new_row][new_col]
+                if target_square is None:
+                    possible_moves.append((new_row, new_col))
+                    next_moves(new_row, new_col, steps_left - 1)
+                    continue
+
+                # stop traversal
+                if target_square.color == board_piece.color:
+                    continue
+                if target_square.color != board_piece.color:
+                    possible_moves.append((new_row, new_col))
+                    continue
+
+        next_moves(row, col, piece.max_steps)
+
         return possible_moves
                 
-
-    def next_moves(self, color: str, row: int, col: int, directions: List[Tuple[int, int]], steps_left: int, possible_moves: List[Tuple[int, int]]):
-        if steps_left == 0:
-            return
-        for di in directions:
-            # validation
-            new_row = row + (1 if color == '+' else -1) * di[0]
-            new_col = col + di[1]
-            if not self.is_valid_position(new_row, new_col) or (new_row, new_col) in possible_moves:
-                continue
-
-            # recursion
-            target_square = self.board[new_row][new_col]
-            if target_square is None:
-                possible_moves.append((new_row, new_col))
-                self.next_moves(color, new_row, new_col, directions, steps_left - 1, possible_moves)
-                continue
-
-            # stop traversal
-            if target_square.color == color:
-                continue
-            if target_square.color != color:
-                possible_moves.append((new_row, new_col))
-                continue
 
     def select_piece(self, pieces: List[ChessPiece], player_turn: str, clicked_row: int, clicked_col: int):
         
