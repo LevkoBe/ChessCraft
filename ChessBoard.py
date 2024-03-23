@@ -26,14 +26,14 @@ class ChessBoard:
         
         possible_moves: List[Tuple[int, int]] = []
 
-        for di in piece.directions:     # in each direction
+        for di in piece.moves:          # in each direction
             steps_made = 0              # we can move X steps
             current_row = row
             current_col = col
             while steps_made < piece.max_steps:
                 steps_made += 1
-                new_row = current_row + (1 if board_piece.color == '+' else -1) * di[0]
-                new_col = current_col + di[1]
+                new_row = current_row + (1 if board_piece.color == '+' else -1) * di.x
+                new_col = current_col + di.y
                 if not self.is_valid_position(new_row, new_col):
                     break
                 target_square = self.board[new_row][new_col]
@@ -56,10 +56,10 @@ class ChessBoard:
         def next_moves(row: int, col: int, steps_left: int):
             if steps_left == 0:
                 return
-            for di in piece.directions:
+            for di in piece.moves:
                 # validation
-                new_row = row + (1 if board_piece.color == '+' else -1) * di[0]
-                new_col = col + di[1]
+                new_row = row + (1 if board_piece.color == '+' else -1) * di.x
+                new_col = col + di.y
                 if not self.is_valid_position(new_row, new_col) or (new_row, new_col) in possible_moves:
                     continue
 
