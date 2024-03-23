@@ -9,15 +9,15 @@ class ChessPiece:
         self.moves: List[Move] = self.get_moves(moves)
         self.max_steps: int = int(steps)
         self.ninja: bool = 'n' in optional          # can change direction during the move
-        self.promotion: bool = 'p' in optional      # can promote to another piece after reaching the end of the board
-        self.cloning: bool = 'c' in optional        # clones on each move
-        self.unbreakable: bool = 'u' in optional    # cannot be captured
-        self.invisible: bool = 'v' in optional      # invisible on the board
-        self.shooter: bool = 's' in optional        # doesn't move when capturing others
         self.demon: bool = 'd' in optional          # lives in others (gets another "body" when captures)
-        self.insatiable: bool = 'i' in optional     # after capture makes another move
-        self.grouping: bool = 'g' in optional       # can gather on one cell in quantities more than 1
         self.fusion: bool = 'f' in optional         # combining two or more pieces into a single, more powerful entity
+        self.shooter: bool = 's' in optional        # doesn't move when capturing others
+        self.cloning: bool = 'c' in optional        # clones on each move
+        self.grouping: bool = 'g' in optional       # can gather on one cell in quantities more than 1
+        self.promotion: bool = 'p' in optional      # can promote to another piece after reaching the end of the board
+        self.invisible: bool = 'v' in optional      # invisible on the board
+        self.insatiable: bool = 'i' in optional     # after capture makes another move
+        self.unbreakable: bool = 'u' in optional    # cannot be captured
 
     def get_moves(self, moves_list: List[str]) -> List[Tuple[int, int]]:
         moves: List[Move] = []

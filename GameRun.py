@@ -16,7 +16,7 @@ PLAYER1_COLOR = "#45ab89"
 PLAYER2_COLOR = "#FFD833"
 
 
-def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, int]], selected_square: Tuple[int, int]):
+def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, int]], selected_square: Tuple[int, int], pieces: List[ChessPiece]):
     # board
     for row in range(rows):
         for col in range(columns):
@@ -27,7 +27,11 @@ def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, i
     for row in range(rows):
         for col in range(columns):
             piece = board.board[row][col]
-            if piece is not None:
+            if piece is not None: # and is visible
+                chess_piece = next((p for p in pieces if p.symbol == piece.piece), None)
+                if chess_piece is not None and chess_piece.invisible:
+                    continue
+                
                 symbol = piece.piece
                 font = pygame.font.Font(None, 36)
                 if piece.color == '+':
@@ -127,7 +131,7 @@ def play_game(game: Gameset):
 
         # render board
         screen.fill(BACKGROUND_COLOR)
-        render_board(screen, game.board, game.board.rows, game.board.columns, possible_moves, selected_square)
+        render_board(screen, game.board, game.board.rows, game.board.columns, possible_moves, selected_square, game.pieces)
         pygame.display.flip()
 
         clock.tick(30)

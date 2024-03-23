@@ -1,3 +1,4 @@
+import copy
 from typing import List, Tuple
 
 from ChessBoardPiece import ChessBoardPiece
@@ -43,8 +44,12 @@ class ChessBoard:
                     current_col = new_col
                     continue
                 if target_square.color == board_piece.color:
+                    # fusion piece check
                     break
                 if target_square.color != board_piece.color:
+                    # unbreakable piece check
+                    # shooter piece check
+                    # insatiable piece check
                     possible_moves.append((new_row, new_col))
                     break
         return possible_moves
@@ -107,6 +112,7 @@ class ChessBoard:
         selected_square = (clicked_row, clicked_col)
         optional = 'c' if piece.cloning else ''
         optional += 'p' if piece.promotion else ''
+        optional += 'd' if piece.demon else ''
         return possible_moves, selected_square, optional
 
     def move_piece(self, selected_square: Tuple[int, int], white_pieces: List[Tuple[str, int, int]], \
@@ -128,6 +134,9 @@ class ChessBoard:
         if 'p' in optional and \
             ((current_piece.color == '-' and clicked_row == 0) or (current_piece.color == '+' and clicked_row == self.rows - 1)):
             current_piece = ChessBoardPiece(string_input("Into which piece would you like to promote: ", "select", options=pieces), current_piece.color)
+        if 'd' in optional and target_cell is not None:
+            self.board[selected_square[0]][selected_square[1]] = copy.deepcopy(current_piece)
+            current_piece.piece = target_cell.piece
         self.board[clicked_row][clicked_col] = current_piece
 
         # remove the piece standing on the target cell
