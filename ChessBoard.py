@@ -23,13 +23,13 @@ class ChessBoard:
         board = [[ChessBoardPiece.from_string(piece) if piece else None for piece in row] for row in json_data['board']]
         return cls(rows, columns, board)
 
-    def get_possible_moves(self, position: Tuple[int, int], piece: ChessPiece) -> List[str]:
+    def get_possible_moves(self, position: Tuple[int, int], piece: ChessPiece) -> List[Tuple[int, int]]:
         
         # validation
         row, col = (position)
         if not self.is_valid_position(row, col):
             return []
-        board_piece: ChessPiece = self.board[row][col]
+        board_piece: ChessBoardPiece = self.board[row][col]
         if board_piece is None or piece is None:
             return []
 
