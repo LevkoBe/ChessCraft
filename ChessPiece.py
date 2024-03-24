@@ -5,7 +5,7 @@ def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
     return 0 <= row < rows and 0 <= col < cols
 
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, directions: List[str], max_steps: str):
+    def __init__(self, name: str, symbol: str, directions: List[str], max_steps: int):
         self.name = name
         self.symbol = symbol
         self.directions: List[Tuple[int, int]] = self.get_directions(directions)  
@@ -65,4 +65,4 @@ class ChessPiece:
                 nums_reachable_cells.append(self.calculate_reachable_cells((r, c),rows, columns))
         self.max_cells_reachable = max(nums_reachable_cells)
         self.avg_cells_reachable = sum(nums_reachable_cells)/len(nums_reachable_cells)
-        return 
+        return

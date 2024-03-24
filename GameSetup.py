@@ -6,12 +6,12 @@ from ChessPiece import ChessPiece
 from UserSupervisor import string_input, list_input
 
 
-def setup_pieces() -> List[ChessPiece]:
+def setup_pieces(rows: int, cols: int) -> List[ChessPiece]:
     pieces: List[ChessPiece] = []
     while True:
         action = string_input("Enter 'add' to add a piece, 'next' to continue, or 'quit' to end the game: ", input_type="select", options=["add", "next", "quit"])
         if action == 'add':
-            piece = add_piece([p.symbol for p in pieces])
+            piece = add_piece([p.symbol for p in pieces], rows, cols)
             pieces.append(piece)
             print(f"{piece.name} added successfully.")
         elif action == 'next':
@@ -38,13 +38,14 @@ def setup_board(rows: int, columns: int, pieces: List[str]) -> ChessBoard:
     return board
 
 
-def add_piece(pieces: List[str]) -> ChessPiece:
+def add_piece(pieces: List[str], rows:int, cols:int) -> ChessPiece:
     name = input("Please, enter the name of the piece: ")
     symbol = string_input("Please, enter the character to represent the piece: ", "regex", options=r"^.$", prohibited=pieces)
     directions = list_input("Please, enter the possible directions of moves (++, or +2,-3 format): ", "regex", options=r"^[+-0][+-0]$|^[+-]\d+,[+-]\d+$")
     steps = int(string_input("Please, enter the maximum number of steps in any direction: ", "regex", options=r"^\d+$"))
-
-    return ChessPiece(name, symbol, directions, steps)
+    piece = ChessPiece(name, symbol, directions, steps)
+    piece.calculate_reachable_cells_stats(rows, cols)
+    return piece
 
 
 def white_black_division(board: ChessBoard):
