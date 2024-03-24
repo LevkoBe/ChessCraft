@@ -76,7 +76,7 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
 
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
-        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col)
+        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, pieces)
         player_turn = '+' if player_turn == '-' else '-'
         selected_square = None
         possible_moves = []

@@ -4,6 +4,7 @@ from typing import List, Tuple
 def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
     return 0 <= row < rows and 0 <= col < cols
 
+
 class ChessPiece:
     def __init__(self, name: str, symbol: str, directions: List[str], max_steps: int):
         self.name = name
@@ -12,6 +13,7 @@ class ChessPiece:
         self.max_steps: int = int(max_steps)
         self.max_cells_reachable = None
         self.avg_cells_reachable = None
+        self.value = None
 
     def to_string(self) -> str:
         directions_str = ' '.join([f"{('+' if d[0] >= 0 else '')}{d[0]},{('+' if d[1] >= 0 else '')}{d[1]}" for d in self.directions])
