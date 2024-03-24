@@ -95,6 +95,19 @@ def process_mouse_click(board: ChessBoard, pieces: List[ChessPiece], player_turn
 
     return possible_moves, player_turn, selected_square, white_pieces, black_pieces, optional
 
+def game_finished(white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], game: Gameset):
+    white_distinct = set(piece[0] for piece in white_pieces)
+    black_distinct = set(piece[0] for piece in black_pieces)
+
+    if not white_distinct.intersection(game.specials):
+        print("Second player won!")
+        return True
+    if not black_distinct.intersection(game.specials):
+        print("First player won!")
+        return True
+    
+    return False  # Game continues if at least one special piece is present in both white and black pieces
+
 
 def play_game(game: Gameset):
     set_window_dimensions(game.board.rows, game.board.columns)
@@ -120,13 +133,9 @@ def play_game(game: Gameset):
                 possible_moves, player_turn, selected_square, white_pieces, black_pieces, optional = \
                     process_mouse_click(game.board, game.pieces, player_turn, selected_square, \
                                         possible_moves, white_pieces, black_pieces, optional)
-        
-        # check winners
-        if game.special not in [p[0] for p in white_pieces]:
-            print("Second player won!")
-            break
-        if game.special not in [p[0] for p in black_pieces]:
-            print("First player won!")
+
+        # Check winners
+        if game_finished(white_pieces, black_pieces, game):
             break
 
         # render board
