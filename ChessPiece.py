@@ -4,7 +4,6 @@ from typing import List, Tuple
 def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
     return 0 <= row < rows and 0 <= col < cols
 
-
 class ChessPiece:
     def __init__(self, name: str, symbol: str, directions: List[str], max_steps: str):
         self.name = name
@@ -36,14 +35,15 @@ class ChessPiece:
                 # format: ".n,.n", where '.' is '+', or '-', and 'n' is a number of (vertical, horizontal) moves
                 directions.append(tuple(map(int, directions_string.split(','))))
         return directions
-    def calculate_reachable_cells(self, position: Tuple[int, int], rows:int , columns: int) -> List[Tuple[int, int]] :
+
+    def calculate_reachable_cells(self, position: Tuple[int, int], rows:int , columns: int) -> int :
         row, column = position
         if not is_valid_position(row, column, rows, columns):
-            return []
-        # change to just counter after testing
-        possible_moves: List[Tuple[int, int]] = []
+            return 0
+        possible_moves = 0
         for di in self.directions:     # in each direction
-            steps_made = 0              # we can move X steps
+            steps_made = 0              # we can mo
+            # ve X steps
             current_row = row
             current_col = column
             while steps_made < self.max_steps:
@@ -52,9 +52,17 @@ class ChessPiece:
                 new_col = current_col + di[1]
                 if not is_valid_position(new_row, new_col, rows, columns):
                     break
-                possible_moves.append((new_row, new_col))
+                possible_moves += 1
                 current_row = new_row
                 current_col = new_col
 
         return possible_moves
 
+    def calculate_reachable_cells_stats(self, rows:int, columns: int):
+        nums_reachable_cells = []
+        for r in range(0, rows):
+            for c in range(0, columns):
+                nums_reachable_cells.append(self.calculate_reachable_cells((r, c),rows, columns))
+        self.max_cells_reachable = max(nums_reachable_cells)
+        self.avg_cells_reachable = sum(nums_reachable_cells)/len(nums_reachable_cells)
+        return 
