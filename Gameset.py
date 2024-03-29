@@ -20,19 +20,12 @@ class Gameset:
         self.board: ChessBoard = setup_board(rows, columns, [p.symbol for p in self.pieces])
         self.piece_mapping.set_all_pieces(self.pieces)
         self.set_specials()
-        self.assign_values()
 
     def set_specials(self):
         specials = list_input("Please, tell which pieces should be captured to win the game (characters): ",
                    "select", [piece.symbol for piece in self.pieces])
         for special in specials:
             self.piece_mapping.get_piece(special).is_special = True
-
-    def assign_values(self):
-        for piece in self.pieces:
-            piece.value = piece.avg_cells_reachable
-            if piece.is_special:
-                piece.value *= 100
 
     def save_game(self, filename):
         game_state = {

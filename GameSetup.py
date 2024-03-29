@@ -29,7 +29,7 @@ def setup_board(rows: int, columns: int, pieces: List[str]) -> ChessBoard:
     print("Please fill the board with the figures:")
     for i in range(rows):
         row_input = list_input("", "select", options=pieces + [''])
-        color = "+" if i <= rows // 2 else "-"
+        color = "b" if i <= rows // 2 else "w"
         for j in range(columns):
             if j < len(row_input) and row_input[j]:
                 board.board[i][j] = ChessBoardPiece(row_input[j], color)
@@ -55,7 +55,7 @@ def white_black_division(board: ChessBoard):
         for col in range(board.columns):
             piece = board.board[row][col]
             if piece is not None:
-                if piece.color == '-':
+                if piece.color == 'w':
                     white_pieces.append((piece.piece, row, col))
                 else:
                     black_pieces.append((piece.piece, row, col))

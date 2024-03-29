@@ -32,7 +32,7 @@ def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, i
             if piece is not None:
                 symbol = piece.piece
                 font = pygame.font.Font(None, 36)
-                if piece.color == '+':
+                if piece.color == 'b':
                     text_color = PLAYER1_COLOR
                 else:
                     text_color = PLAYER2_COLOR
@@ -81,9 +81,13 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
         white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, piece_mapping)
-        player_turn = '+' if player_turn == '-' else '-'
+        player_turn = 'b' if player_turn == 'w' else 'w'
         selected_square = None
         possible_moves = []
+
+        # evaluate position
+        value_of_position = board.evaluate_position(white_pieces, black_pieces, piece_mapping)
+        print(f"Position is evaluated as {value_of_position}")
     else:
         # unselect piece
         print(f"Invalid move from {selected_square} to ({clicked_row}, {clicked_col})")
@@ -102,7 +106,7 @@ def play_game(game: Gameset):
 
     clock = pygame.time.Clock()
 
-    player_turn = '-'
+    player_turn = 'w'
     running = True
     selected_square: Tuple[int, int] = None
     possible_moves: List[Tuple[int, int]] = []
@@ -125,10 +129,6 @@ def play_game(game: Gameset):
                 if not any(game.piece_mapping.get_piece(p[0]).is_special for p in black_pieces):
                     print("First player won!")
                     break
-
-                # evaluate position
-                value_of_position = game.board.evaluate_position(white_pieces, black_pieces, game.piece_mapping)
-                print(f"Position is evaluated as {value_of_position}")
 
                 # render board
                 render_board(screen, game.board, game.board.rows, game.board.columns, possible_moves, selected_square)

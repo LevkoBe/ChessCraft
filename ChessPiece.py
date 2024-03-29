@@ -12,7 +12,6 @@ class ChessPiece:
         self.directions: List[Tuple[int, int]] = self.get_directions(directions)  
         self.max_steps: int = int(max_steps)
         self.max_cells_reachable = None
-        self.avg_cells_reachable = None
         self.value = None
         self.is_special = False
 
@@ -66,5 +65,5 @@ class ChessPiece:
             for c in range(0, columns):
                 nums_reachable_cells.append(self.calculate_reachable_cells((r, c),rows, columns))
         self.max_cells_reachable = max(nums_reachable_cells)
-        self.avg_cells_reachable = sum(nums_reachable_cells)/len(nums_reachable_cells)
+        self.value = sum(nums_reachable_cells)/len(nums_reachable_cells)
         return
