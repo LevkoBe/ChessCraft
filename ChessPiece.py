@@ -14,6 +14,7 @@ class ChessPiece:
         self.max_cells_reachable = None
         self.avg_cells_reachable = None
         self.value = None
+        self.is_special = False
 
     def to_string(self) -> str:
         directions_str = ' '.join([f"{('+' if d[0] >= 0 else '')}{d[0]},{('+' if d[1] >= 0 else '')}{d[1]}" for d in self.directions])
@@ -44,8 +45,7 @@ class ChessPiece:
             return 0
         possible_moves = 0
         for di in self.directions:     # in each direction
-            steps_made = 0              # we can mo
-            # ve X steps
+            steps_made = 0              # we can move X steps
             current_row = row
             current_col = column
             while steps_made < self.max_steps:

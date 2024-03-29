@@ -61,11 +61,3 @@ def white_black_division(board: ChessBoard):
                     black_pieces.append((piece.piece, row, col))
     return white_pieces, black_pieces
 
-
-# maybe i could have done it right away when creating pieces but then how do i check if special is valid?
-def assign_values(pieces: List[ChessPiece], special:str):
-    for piece in pieces:
-        if piece.symbol == special:
-            piece.value = 9999999
-        else:
-            piece.value = piece.max_cells_reachable

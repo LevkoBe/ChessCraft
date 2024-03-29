@@ -1,6 +1,7 @@
 from typing import List, Dict, Tuple, Any
 from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
+from PieceMapping import PieceMapping
 
 
 class ChessBoard:
@@ -58,7 +59,7 @@ class ChessBoard:
                     break
         return possible_moves
 
-    def select_piece(self, pieces: List[ChessPiece], player_turn: str, clicked_row: int, clicked_col: int):
+    def select_piece(self, piece_mapping: PieceMapping, player_turn: str, clicked_row: int, clicked_col: int):
         
         # validation
         board_square = self.board[clicked_row][clicked_col]
@@ -67,11 +68,7 @@ class ChessBoard:
             return [], None
         
         # initialization
-        piece = None
-        for p in pieces:
-            if p.symbol == board_square.piece:
-                piece = p
-                break
+        piece = piece_mapping.get_piece(board_square.piece)
         position = (clicked_row, clicked_col)
         possible_moves: List[Tuple[int, int]] = self.get_possible_moves(position, piece)
         if not possible_moves:
@@ -84,7 +81,7 @@ class ChessBoard:
         return possible_moves, selected_square
 
     def move_piece(self, selected_square: Tuple[int, int], white_pieces: List[Tuple[str, int, int]], \
-                black_pieces: List[Tuple[str, int, int]], clicked_row: int, clicked_col: int, pieces: List[ChessPiece]) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
+                black_pieces: List[Tuple[str, int, int]], clicked_row: int, clicked_col: int, piece_mapping: PieceMapping) -> Tuple[list[Tuple[str, int, int]], Tuple[list[Tuple[str, int, int]]]]:
 
         print(f"Move from {selected_square} to ({clicked_row}, {clicked_col})")
         target_cell = self.board[clicked_row][clicked_col]
@@ -106,36 +103,25 @@ class ChessBoard:
                 black_pieces = [piece for piece in black_pieces if piece[1] != clicked_row or piece[2] != clicked_col]
             else:
                 white_pieces = [piece for piece in white_pieces if piece[1] != clicked_row or piece[2] != clicked_col]
-        value_of_position = self.evaluate_position(white_pieces, black_pieces, pieces)
-        print(f"Position is evaluated as {value_of_position}")
         return white_pieces, black_pieces
 
     def is_valid_position(self, row: int, col: int) -> bool:
         return 0 <= row < self.rows and 0 <= col < self.columns
 
-    def evaluate_position(self, white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]], pieces: List[ChessPiece]):
+    def evaluate_position(self, white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]], piece_mapping: PieceMapping):
         total = 0
         for white_piece in white_pieces:
-            cur_symbol: str = white_piece[0]
             cur_position: Tuple[int, int] = white_piece[1], white_piece[2]
-            for p in pieces:
-                if p.symbol == cur_symbol:
-                    cur_piece = p
-                    break
+            cur_piece = piece_mapping.get_piece(white_piece[0])
+
             mobility = len(self.get_possible_moves(cur_position, cur_piece))/cur_piece.max_cells_reachable
             added_value = mobility*cur_piece.value
             total += added_value
         for black_piece in black_pieces:
-            cur_symbol: str = black_piece[0]
             cur_position: Tuple[int, int] = black_piece[1], black_piece[2]
-            for p in pieces:
-                if p.symbol == cur_symbol:
-                    cur_piece = p
-                    break
+            cur_piece = piece_mapping.get_piece(black_piece[0])
+
             mobility = len(self.get_possible_moves(cur_position, cur_piece))/cur_piece.max_cells_reachable
             added_value = mobility*cur_piece.value
             total -= added_value
         return total
-
-
-
