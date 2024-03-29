@@ -3,6 +3,7 @@ from typing import List, Dict, Tuple, Any
 from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 from PieceMapping import PieceMapping
+import copy
 
 
 class ChessBoard:
@@ -175,3 +176,56 @@ class ChessBoard:
             total += current_value
 
         return total
+    
+
+    def minimax(self, white_pieces, black_pieces, cur_pos:Tuple[int, int], cur_move:Tuple[int, int], max_depth:int, player_turn, piece_mapping, curdepth=0):
+        # make local copies of everything
+        local_board = copy.deepcopy(self)
+        white_pieces_local = copy.deepcopy(white_pieces)
+        black_pieces_local = copy.deepcopy(black_pieces)
+        player_turn_local = player_turn
+
+        # move piece, increase depth, change player turn
+        white_pieces_local, black_pieces_local = local_board.move_piece(cur_pos, white_pieces_local, black_pieces_local,cur_move[0], cur_move[1], piece_mapping)
+        curdepth += 1
+        player_turn_local = ("b" if player_turn_local == "w" else "w")
+
+        # change if it is an edge case
+        if not any(piece_mapping.get_piece(p[0]).is_special for p in white_pieces_local):
+            return -100000
+        if not any(piece_mapping.get_piece(p[0]).is_special for p in black_pieces_local):
+            return 100000
+        if curdepth == max_depth:
+            return local_board.evaluate_position(white_pieces_local, black_pieces_local, piece_mapping)
+        
+        # find all values in children positions
+        possible_positions_vals = []
+        for piece in (white_pieces_local if player_turn_local == 'w' else black_pieces_local):
+            symbol, row, col = piece
+            cur_pos = (row, col)
+            cur_piece = piece_mapping.get_piece(symbol)
+            possible_moves: List[Tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece)
+
+            for cur_move in possible_moves:
+                cur_move_value = local_board.minimax(white_pieces_local, black_pieces_local, cur_pos, cur_move, max_depth, player_turn_local,piece_mapping, curdepth)
+                possible_positions_vals.append(cur_move_value)
+        # select max or min of children positions values (based on player's turn)
+        value = (max(possible_positions_vals) if player_turn_local == "w" else min(possible_positions_vals))
+        return value
+
+    def find_best_move(self, white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], piece_mapping: PieceMapping, player_turn):
+        move_to_value = {}
+        maximal_depth = 2
+
+        for piece in (white_pieces if player_turn == 'w' else black_pieces):
+            symbol, row, col = piece
+            cur_pos = (row, col)
+            cur_piece = piece_mapping.get_piece(symbol)
+            possible_moves: List[Tuple[int, int]] = self.get_possible_moves(row, col, cur_piece)
+
+            for cur_move in possible_moves:
+                cur_move_value = self.minimax(white_pieces, black_pieces,cur_pos, cur_move, maximal_depth, player_turn,piece_mapping)
+                move_to_value[cur_move, symbol, row, col] = cur_move_value
+
+        best_move = (max(move_to_value, key=move_to_value.get) if player_turn == 'w' else min(move_to_value, key=move_to_value.get))
+        return best_move

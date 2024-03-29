@@ -88,6 +88,10 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
         # evaluate position
         value_of_position = board.evaluate_position(white_pieces, black_pieces, piece_mapping)
         print(f"Position is evaluated as {value_of_position}")
+
+        # find best move (currently i will put this functionality here
+        best_move = board.find_best_move(white_pieces, black_pieces, piece_mapping, player_turn)
+        print(f"best move is by {best_move[1]} from {best_move[2]}, {best_move[3]} to {best_move[0]}")
     else:
         # unselect piece
         print(f"Invalid move from {selected_square} to ({clicked_row}, {clicked_col})")
