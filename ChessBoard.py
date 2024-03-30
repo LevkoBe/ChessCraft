@@ -172,6 +172,7 @@ class ChessBoard:
                         break
             
             current_value = ((mobility / piece_mapping.get_piece(piece_symbol).max_cells_reachable + advanced) * cur_piece.value) + (targeting / cur_piece.value)
+            current_value = current_value if not piece_mapping.get_piece(piece_symbol).is_special else 100 + current_value
             total += current_value
 
         return total
