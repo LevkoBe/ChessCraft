@@ -132,9 +132,11 @@ def play_game(game: Gameset):
                 # check winners
                 if not any(game.piece_mapping.get_piece(p[0]).is_special for p in white_pieces):
                     print("Second player won!")
+                    running = False
                     break
                 if not any(game.piece_mapping.get_piece(p[0]).is_special for p in black_pieces):
                     print("First player won!")
+                    running = False
                     break
 
                 # render board
