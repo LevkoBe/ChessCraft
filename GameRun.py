@@ -72,7 +72,6 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
     mouse_x, mouse_y = pygame.mouse.get_pos()
     clicked_row = mouse_y // square_size
     clicked_col = mouse_x // square_size
-    print(f"Clicked on square ({clicked_row}, {clicked_col})")
 
     # select piece
     if selected_square is None:
@@ -80,8 +79,7 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
 
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
-        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, piece_mapping)
-        print(f"Move from {selected_square} to ({clicked_row}, {clicked_col})")
+        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col)
         player_turn = 'b' if player_turn == 'w' else 'w'
         selected_square = None
         possible_moves = []
