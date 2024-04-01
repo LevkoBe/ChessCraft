@@ -91,8 +91,10 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
         print(f"Position is evaluated as {value_of_position}")
 
         # find best move (currently i will put this functionality here
-        best_move = board.find_best_move(white_pieces, black_pieces, piece_mapping, player_turn)
-        print(f"best move is by {best_move[1]} from {best_move[2]}, {best_move[3]} to {best_move[0]}")
+        if any(piece_mapping.get_piece(p[0]).is_special for p in white_pieces) and \
+                any(piece_mapping.get_piece(p[0]).is_special for p in black_pieces):
+            best_move = board.find_best_move(white_pieces, black_pieces, piece_mapping, player_turn)
+            print(f"best move is by {best_move[1]} from {best_move[2]}, {best_move[3]} to {best_move[0]}")
     else:
         # unselect piece
         print(f"Invalid move from {selected_square} to ({clicked_row}, {clicked_col})")
