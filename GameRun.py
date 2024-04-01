@@ -81,6 +81,7 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
         white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, piece_mapping)
+        print(f"Move from {selected_square} to ({clicked_row}, {clicked_col})")
         player_turn = 'b' if player_turn == 'w' else 'w'
         selected_square = None
         possible_moves = []

@@ -82,8 +82,6 @@ class ChessBoard:
 
     def move_piece(self, selected_square: Tuple[int, int], white_pieces: List[Tuple[str, int, int]], \
                 black_pieces: List[Tuple[str, int, int]], clicked_row: int, clicked_col: int, piece_mapping: PieceMapping) -> Tuple[list[Tuple[str, int, int]], Tuple[list[Tuple[str, int, int]]]]:
-
-        print(f"Move from {selected_square} to ({clicked_row}, {clicked_col})")
         target_cell = self.board[clicked_row][clicked_col]
         current_piece = self.board[selected_square[0]][selected_square[1]]
 
@@ -127,8 +125,6 @@ class ChessBoard:
         # Nevertheless, coefficients can be added, as well as other criterias
         total_for_white = self._calculate_evaluation(white_pieces, piece_mapping, True)
         total_for_black = self._calculate_evaluation(black_pieces, piece_mapping, False)
-        print(f"white: {total_for_white}")
-        print(f"black: {total_for_black}")
         return total_for_white - total_for_black
 
     def _calculate_evaluation(self, pieces: List[Tuple[str, int, int]], piece_mapping: PieceMapping, is_white: bool) -> float:
@@ -176,9 +172,9 @@ class ChessBoard:
             total += current_value
 
         return total
-    
 
-    def minimax(self, white_pieces, black_pieces, cur_pos:Tuple[int, int], cur_move:Tuple[int, int], max_depth:int, player_turn, piece_mapping, curdepth=0):
+    def minimax(self, white_pieces, black_pieces, cur_pos:Tuple[int, int], cur_move:Tuple[int, int], max_depth:int, player_turn, piece_mapping, n, curdepth=0):
+        n += 1
         # make local copies of everything
         local_board = copy.deepcopy(self)
         white_pieces_local = copy.deepcopy(white_pieces)
@@ -190,13 +186,9 @@ class ChessBoard:
         curdepth += 1
         player_turn_local = ("b" if player_turn_local == "w" else "w")
 
-        # change if it is an edge case
-        if not any(piece_mapping.get_piece(p[0]).is_special for p in white_pieces_local):
-            return -100000
-        if not any(piece_mapping.get_piece(p[0]).is_special for p in black_pieces_local):
-            return 100000
+        # check depth
         if curdepth == max_depth:
-            return local_board.evaluate_position(white_pieces_local, black_pieces_local, piece_mapping)
+            return local_board.evaluate_position(white_pieces_local, black_pieces_local, piece_mapping), n
         
         # find all values in children positions
         possible_positions_vals = []
@@ -207,15 +199,16 @@ class ChessBoard:
             possible_moves: List[Tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece)
 
             for cur_move in possible_moves:
-                cur_move_value = local_board.minimax(white_pieces_local, black_pieces_local, cur_pos, cur_move, max_depth, player_turn_local,piece_mapping, curdepth)
+                cur_move_value = local_board.minimax(white_pieces_local, black_pieces_local, cur_pos, cur_move, max_depth, player_turn_local,piece_mapping,n, curdepth)
                 possible_positions_vals.append(cur_move_value)
         # select max or min of children positions values (based on player's turn)
         value = (max(possible_positions_vals) if player_turn_local == "w" else min(possible_positions_vals))
-        return value
+        return value, n
 
     def find_best_move(self, white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], piece_mapping: PieceMapping, player_turn):
         move_to_value = {}
         maximal_depth = 2
+        n = 0
 
         for piece in (white_pieces if player_turn == 'w' else black_pieces):
             symbol, row, col = piece
@@ -224,8 +217,9 @@ class ChessBoard:
             possible_moves: List[Tuple[int, int]] = self.get_possible_moves(row, col, cur_piece)
 
             for cur_move in possible_moves:
-                cur_move_value = self.minimax(white_pieces, black_pieces,cur_pos, cur_move, maximal_depth, player_turn,piece_mapping)
+                cur_move_value, n = self.minimax(white_pieces, black_pieces,cur_pos, cur_move, maximal_depth, player_turn,piece_mapping, n)
                 move_to_value[cur_move, symbol, row, col] = cur_move_value
 
         best_move = (max(move_to_value, key=move_to_value.get) if player_turn == 'w' else min(move_to_value, key=move_to_value.get))
+        print(f"number of positions analyzed: {n}, depth: {maximal_depth}")
         return best_move
