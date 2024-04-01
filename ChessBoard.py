@@ -199,7 +199,7 @@ class ChessBoard:
             possible_moves: List[Tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece)
 
             for cur_move in possible_moves:
-                cur_move_value = local_board.minimax(white_pieces_local, black_pieces_local, cur_pos, cur_move, max_depth, player_turn_local,piece_mapping,n, curdepth)
+                cur_move_value, n = local_board.minimax(white_pieces_local, black_pieces_local, cur_pos, cur_move, max_depth, player_turn_local,piece_mapping,n, curdepth)
                 possible_positions_vals.append(cur_move_value)
         # select max or min of children positions values (based on player's turn)
         value = (max(possible_positions_vals) if player_turn_local == "w" else min(possible_positions_vals))
@@ -207,7 +207,7 @@ class ChessBoard:
 
     def find_best_move(self, white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], piece_mapping: PieceMapping, player_turn):
         move_to_value = {}
-        maximal_depth = 2
+        maximal_depth = 4
         n = 0
 
         for piece in (white_pieces if player_turn == 'w' else black_pieces):
