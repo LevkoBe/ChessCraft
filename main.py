@@ -12,8 +12,8 @@ def main():
             game.create_game()
 
             # save the game
-            save_option = string_input('Would you like to save this game? ((yes)/no): ', 'select', options=['yes', 'no', ''])
-            if save_option.lower() != 'no':
+            save_option = string_input('Would you like to save this game? (yes/(no)): ', 'select', options=['yes', 'no', ''])
+            if save_option.lower() == 'yes':
                 filename = input('Enter the filename to save the game: ')
                 game.save_game(filename)
         
