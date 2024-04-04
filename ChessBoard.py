@@ -276,6 +276,7 @@ class ChessBoard:
                                                  piece_mapping.mapping.values(), white_pieces_local, black_pieces_local,
                                                                          piece_mapping)
         curdepth += 1
+        player_turn_local = ("b" if maximazing_player_local else "w")
         maximazing_player_local = not maximazing_player_local
 
         # check depth
@@ -292,7 +293,7 @@ class ChessBoard:
                 symbol, row, col = piece
                 cur_pos = (row, col)
                 cur_piece = piece_mapping.get_piece(symbol)
-                possible_moves: List[Tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece)
+                possible_moves: list[tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece, player_turn_local, piece_mapping)
 
                 for cur_move in possible_moves:
                     cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local,
@@ -333,7 +334,7 @@ class ChessBoard:
     def find_best_move(self, white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]],
                        piece_mapping: PieceMapping, player_turn: str) -> tuple[tuple[int, int], str, int, int]:
         move_to_value: dict[tuple[tuple[int, int, str], str, int, int], float] = {}
-        maximal_depth = 3
+        maximal_depth = 2
         positions_analyzed = 0
         maximazing_player = True if player_turn == "w" else False
 
