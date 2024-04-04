@@ -187,28 +187,31 @@ class ChessBoard:
         return total
 
     def minimax(self, white_pieces, black_pieces, cur_pos: Tuple[int, int], cur_move: Tuple[int, int], max_depth: int,
-                player_turn, piece_mapping, positions_analyzed, alpha, beta, curdepth=0):
+                maximazing_player, piece_mapping, positions_analyzed, alpha, beta, curdepth=0):
         positions_analyzed += 1
         # make local copies of everything
         local_board = copy.deepcopy(self)
         white_pieces_local = copy.deepcopy(white_pieces)
         black_pieces_local = copy.deepcopy(black_pieces)
-        player_turn_local = player_turn
+        maximazing_player_local = copy.deepcopy(maximazing_player)
 
         # move piece, increase depth, change player turn
         white_pieces_local, black_pieces_local = local_board.move_piece(cur_pos, white_pieces_local, black_pieces_local,
                                                                         cur_move[0], cur_move[1])
         curdepth += 1
-        player_turn_local = ("b" if player_turn_local == "w" else "w")
+        maximazing_player_local = not maximazing_player_local
 
         # check depth
         if curdepth == max_depth:
             return local_board.evaluate_position(white_pieces_local, black_pieces_local,
                                                  piece_mapping), positions_analyzed
+        break_outer_loop = False
 
-        if player_turn_local == "w":
+        if maximazing_player_local:
             max_val = -99999999999999
             for piece in white_pieces_local:
+                if break_outer_loop:
+                    break
                 symbol, row, col = piece
                 cur_pos = (row, col)
                 cur_piece = piece_mapping.get_piece(symbol)
@@ -217,11 +220,12 @@ class ChessBoard:
                 for cur_move in possible_moves:
                     cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local,
                                                                              cur_pos, cur_move,
-                                                                             max_depth, player_turn_local, piece_mapping,
+                                                                             max_depth, maximazing_player_local, piece_mapping,
                                                                              positions_analyzed, alpha, beta, curdepth)
                     max_val = max(max_val, cur_move_value)
-                    alpha = max(max_val, cur_move_value)
+                    alpha = max(alpha, cur_move_value)
                     if beta <= alpha:
+                        break_outer_loop = True
                         break
 
             return max_val, positions_analyzed
@@ -229,6 +233,8 @@ class ChessBoard:
         else:
             min_val = 99999999999999
             for piece in black_pieces_local:
+                if break_outer_loop:
+                    break
                 symbol, row, col = piece
                 cur_pos = (row, col)
                 cur_piece = piece_mapping.get_piece(symbol)
@@ -237,11 +243,12 @@ class ChessBoard:
                 for cur_move in possible_moves:
                     cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local,
                                                                              cur_pos, cur_move,
-                                                                             max_depth, player_turn_local, piece_mapping,
+                                                                             max_depth, maximazing_player_local, piece_mapping,
                                                                              positions_analyzed, alpha, beta, curdepth)
                     min_val = min(min_val, cur_move_value)
-                    alpha = min(min_val, cur_move_value)
+                    beta = min(beta, cur_move_value)
                     if beta <= alpha:
+                        break_outer_loop = True
                         break
 
             return min_val, positions_analyzed
@@ -251,6 +258,7 @@ class ChessBoard:
         move_to_value = {}
         maximal_depth = 3
         positions_analyzed = 0
+        maximazing_player = True if player_turn == "w" else False
 
         for piece in (white_pieces if player_turn == 'w' else black_pieces):
             symbol, row, col = piece
@@ -260,8 +268,8 @@ class ChessBoard:
 
             for cur_move in possible_moves:
                 cur_move_value, positions_analyzed = self.minimax(white_pieces, black_pieces, cur_pos, cur_move,
-                                                                  maximal_depth, player_turn, piece_mapping,
-                                                                  positions_analyzed, alpha=-999999999, beta=999999999)
+                                                                  maximal_depth, maximazing_player, piece_mapping,
+                                                                  positions_analyzed, alpha=-9999999999, beta=999999999)
                 move_to_value[cur_move, symbol, row, col] = cur_move_value
 
         best_move = (max(move_to_value, key=move_to_value.get) if player_turn == 'w' else min(move_to_value,
