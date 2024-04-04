@@ -208,7 +208,7 @@ class ChessBoard:
         break_outer_loop = False
 
         if maximazing_player_local:
-            max_val = -99999999999999
+            max_val = -float("inf")
             for piece in white_pieces_local:
                 if break_outer_loop:
                     break
@@ -231,7 +231,7 @@ class ChessBoard:
             return max_val, positions_analyzed
 
         else:
-            min_val = 99999999999999
+            min_val = float("inf")
             for piece in black_pieces_local:
                 if break_outer_loop:
                     break
@@ -269,7 +269,7 @@ class ChessBoard:
             for cur_move in possible_moves:
                 cur_move_value, positions_analyzed = self.minimax(white_pieces, black_pieces, cur_pos, cur_move,
                                                                   maximal_depth, maximazing_player, piece_mapping,
-                                                                  positions_analyzed, alpha=-9999999999, beta=999999999)
+                                                                  positions_analyzed, alpha=-float("inf"), beta=float("inf"))
                 move_to_value[cur_move, symbol, row, col] = cur_move_value
 
         best_move = (max(move_to_value, key=move_to_value.get) if player_turn == 'w' else min(move_to_value,
