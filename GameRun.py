@@ -29,7 +29,11 @@ def render_board(screen, board, rows, columns, possible_moves: List[Tuple[int, i
     for row in range(rows):
         for col in range(columns):
             piece = board.board[row][col]
-            if piece is not None:
+            if piece is not None: # and is visible
+                chess_piece = next((p for p in pieces if p.symbol == piece.piece), None)
+                if chess_piece is not None and chess_piece.invisible:
+                    continue
+                
                 symbol = piece.piece
                 font = pygame.font.Font(None, 36)
                 if piece.color == 'b':
@@ -68,18 +72,20 @@ def set_window_dimensions(rows: int, columns: int):
     return screen_width, screen_height
 
 
-def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_turn: str, selected_square: Tuple[int, int], possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]]) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
+def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_turn: str, selected_square: Tuple[int, int], \
+                        possible_moves: List[Tuple[int, int]], white_pieces: List[Tuple[str, int, int]], \
+                        black_pieces: List[Tuple[str, int, int]], optional: str) -> Tuple[List[Tuple[int, int]], str, Tuple[int, int]]:
     mouse_x, mouse_y = pygame.mouse.get_pos()
     clicked_row = mouse_y // square_size
     clicked_col = mouse_x // square_size
 
     # select piece
     if selected_square is None:
-        possible_moves, selected_square = board.select_piece(piece_mapping, player_turn, clicked_row, clicked_col)
+        possible_moves, selected_square, optional = board.select_piece(piece_mapping, player_turn, clicked_row, clicked_col)
 
     # move piece
     elif (clicked_row, clicked_col) in possible_moves:
-        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col)
+        white_pieces, black_pieces = board.move_piece(selected_square, white_pieces, black_pieces, clicked_row, clicked_col, optional, pieces_chars)
         player_turn = 'b' if player_turn == 'w' else 'w'
         selected_square = None
         possible_moves = []
@@ -99,7 +105,20 @@ def process_mouse_click(board: ChessBoard, piece_mapping: PieceMapping, player_t
         selected_square = None
         possible_moves = []
 
-    return possible_moves, player_turn, selected_square, white_pieces, black_pieces
+    return possible_moves, player_turn, selected_square, white_pieces, black_pieces, optional
+
+def game_finished(white_pieces: List[Tuple[str, int, int]], black_pieces: List[Tuple[str, int, int]], game: Gameset):
+    white_distinct = set(piece[0] for piece in white_pieces)
+    black_distinct = set(piece[0] for piece in black_pieces)
+
+    if not white_distinct.intersection(game.specials):
+        print("Second player won!")
+        return True
+    if not black_distinct.intersection(game.specials):
+        print("First player won!")
+        return True
+    
+    return False  # Game continues if at least one special piece is present in both white and black pieces
 
 
 def play_game(game: Gameset):
@@ -113,6 +132,7 @@ def play_game(game: Gameset):
 
     player_turn = 'w'
     running = True
+    optional = ""
     selected_square: Tuple[int, int] = None
     possible_moves: List[Tuple[int, int]] = []
     white_pieces, black_pieces = white_black_division(game.board)

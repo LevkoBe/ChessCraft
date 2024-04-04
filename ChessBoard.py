@@ -1,9 +1,11 @@
 import logging
+import copy
 from typing import List, Dict, Tuple, Any
 from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 from PieceMapping import PieceMapping
 import copy
+from UserSupervisor import string_input
 
 
 class ChessBoard:
@@ -34,17 +36,20 @@ class ChessBoard:
         board_piece: ChessBoardPiece = self.board[row][col]
         if board_piece is None or piece is None:
             return []
-
-        possible_moves: List[Tuple[int, int]] = []
         
-        for di in piece.directions:     # in each direction
+        if piece.ninja:
+            return self.ninja_moves(piece, row, col)
+        
+        possible_moves: List[Tuple[int, int]] = []
+
+        for di in piece.moves:          # in each direction
             steps_made = 0              # we can move X steps
             current_row = row
             current_col = col
             while steps_made < piece.max_steps:
                 steps_made += 1
-                new_row = current_row + (1 if board_piece.color == 'b' else -1) * di[0]
-                new_col = current_col + di[1]
+                new_row = current_row + (1 if board_piece.color == 'b' else -1) * di.x
+                new_col = current_col + di.y
                 if not self.is_valid_position(new_row, new_col):
                     break
                 target_square = self.board[new_row][new_col]
@@ -54,35 +59,75 @@ class ChessBoard:
                     current_col = new_col
                     continue
                 if target_square.color == board_piece.color:
+                    # fusion piece check
                     break
                 if target_square.color != board_piece.color:
+                    # unbreakable piece check
+                    # shooter piece check
+                    # insatiable piece check
                     possible_moves.append((new_row, new_col))
                     break
         return possible_moves
 
-    def select_piece(self, piece_mapping: PieceMapping, player_turn: str, clicked_row: int, clicked_col: int):
+    def ninja_moves(self, piece: ChessPiece, row: int, col: int):
+        possible_moves: List[Tuple[int, int]] = []
+        board_piece: ChessBoardPiece = self.board[row][col]
+
+        def next_moves(row: int, col: int, steps_left: int):
+            if steps_left == 0:
+                return
+            for di in piece.moves:
+                # validation
+                new_row = row + (1 if board_piece.color == '+' else -1) * di.x
+                new_col = col + di.y
+                if not self.is_valid_position(new_row, new_col) or (new_row, new_col) in possible_moves:
+                    continue
+
+                # recursion
+                target_square = self.board[new_row][new_col]
+                if target_square is None:
+                    possible_moves.append((new_row, new_col))
+                    next_moves(new_row, new_col, steps_left - 1)
+                    continue
+
+                # stop traversal
+                if target_square.color == board_piece.color:
+                    continue
+                if target_square.color != board_piece.color:
+                    possible_moves.append((new_row, new_col))
+                    continue
+
+        next_moves(row, col, piece.max_steps)
+
+        return possible_moves
+                
+
+    def select_piece(self, pieces: List[ChessPiece], player_turn: str, clicked_row: int, clicked_col: int):
         
         # validation
         board_square = self.board[clicked_row][clicked_col]
         if board_square is None or board_square.color != player_turn:
             print(f"No {player_turn} piece at the specified position. Please try again.")
-            return [], None
+            return [], None, ""
         
         # initialization
         piece = piece_mapping.get_piece(board_square.piece)
         possible_moves: List[Tuple[int, int]] = self.get_possible_moves(clicked_row, clicked_col, piece)
         if not possible_moves:
             print(f"No possible moves from ({clicked_row}, {clicked_col})")
-            return possible_moves, None
+            return possible_moves, None, ""
 
         # selection
         selected_square = (clicked_row, clicked_col)
-        return possible_moves, selected_square
+        optional = 'c' if piece.cloning else ''
+        optional += 'p' if piece.promotion else ''
+        optional += 'd' if piece.demon else ''
+        return possible_moves, selected_square, optional
 
     def move_piece(self, selected_square: Tuple[int, int], white_pieces: List[Tuple[str, int, int]], \
                 black_pieces: List[Tuple[str, int, int]], clicked_row: int, clicked_col: int) -> Tuple[list[Tuple[str, int, int]], Tuple[list[Tuple[str, int, int]]]]:
         target_cell = self.board[clicked_row][clicked_col]
-        current_piece = self.board[selected_square[0]][selected_square[1]]
+        current_piece: ChessBoardPiece = self.board[selected_square[0]][selected_square[1]]
 
         # change the position of the piece
         if current_piece.color == 'w':
@@ -91,7 +136,14 @@ class ChessBoard:
         else:
             black_pieces = [(piece[0], clicked_row, clicked_col) if piece[1] == selected_square[0] and piece[2] == selected_square[1]
                             else piece for piece in black_pieces]
-        self.board[selected_square[0]][selected_square[1]] = None
+        if 'c' not in optional:
+            self.board[selected_square[0]][selected_square[1]] = None
+        if 'p' in optional and \
+            ((current_piece.color == '-' and clicked_row == 0) or (current_piece.color == '+' and clicked_row == self.rows - 1)):
+            current_piece = ChessBoardPiece(string_input("Into which piece would you like to promote: ", "select", options=pieces), current_piece.color)
+        if 'd' in optional and target_cell is not None:
+            self.board[selected_square[0]][selected_square[1]] = copy.deepcopy(current_piece)
+            current_piece.piece = target_cell.piece
         self.board[clicked_row][clicked_col] = current_piece
 
         # remove the piece standing on the target cell

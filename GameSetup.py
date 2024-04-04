@@ -43,7 +43,8 @@ def add_piece(pieces: List[str], rows:int, cols:int) -> ChessPiece:
     symbol = string_input("Please, enter the character to represent the piece: ", "regex", options=r"^.$", prohibited=pieces)
     directions = list_input("Please, enter the possible directions of moves (++, or +2,-3 format): ", "regex", options=r"^[+-0][+-0]$|^[+-]\d+,[+-]\d+$")
     steps = int(string_input("Please, enter the maximum number of steps in any direction: ", "regex", options=r"^\d+$"))
-    piece = ChessPiece(name, symbol, directions, steps)
+    optional = list_input("Optional parameters: ", "select", options=['n', 'p', 'c', 's', 'v', 'u', 'd', 'i', 'g', 'f', ''])
+    piece = ChessPiece(name, symbol, directions, steps, optional)
     piece.calculate_reachable_cells_stats(rows, cols)
     return piece
 
