@@ -1,5 +1,5 @@
+from GameFlow import GameFlow
 from Gameset import Gameset
-from GameRun import play_game
 from UserSupervisor import string_input
 
 def main():
@@ -17,13 +17,17 @@ def main():
                 filename = input('Enter the filename to save the game: ')
                 game.save_game(filename)
         
-            play_game(game)
+            # gametrain = GameFlow(game, True, True)
+            # gametrain.play_game()
+            gamerun = GameFlow(game, False, True)
+            gamerun.play_game()
         elif action == 'load':
             filename = input('Enter the filename to load the game: ')
             game = Gameset()
             try:
                 game.load_game(filename)
-                play_game(game)
+                gamerun = GameFlow(game, False, False)
+                gamerun.play_game()
             except FileNotFoundError:
                 print('Could not load the game.')
         elif action == 'exit':
@@ -31,3 +35,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# search through the code for 'todo', and 'alert'

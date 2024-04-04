@@ -61,14 +61,14 @@ class ChessPiece:
         if not is_valid_position(row, column, rows, columns):
             return 0
         possible_moves = 0
-        for di in self.directions:     # in each direction
+        for move in self.moves:     # in each direction
             steps_made = 0              # we can move X steps
             current_row = row
             current_col = column
             while steps_made < self.max_steps:
                 steps_made += 1
-                new_row = current_row + di[0]
-                new_col = current_col + di[1]
+                new_row = current_row + move.x
+                new_col = current_col + move.y
                 if not is_valid_position(new_row, new_col, rows, columns):
                     break
                 possible_moves += 1
