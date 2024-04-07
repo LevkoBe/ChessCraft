@@ -4,14 +4,24 @@ from ChessPiece import ChessPiece
 from GameSetup import setup_board, setup_pieces
 from UserSupervisor import list_input, string_input
 from PieceMapping import PieceMapping
+import random
 
 class Gameset:
     def __init__(self, pieces=None, board=None):
         self.pieces: list[ChessPiece] = pieces
         self.board: ChessBoard = board
         self.piece_mapping: PieceMapping = PieceMapping()
+        # coefficients for: mobility, advancement, targeting, and special
+        self.coefficients: tuple[int, int, int, int] = (1, 1, 1, 100)
         if pieces:
             self.piece_mapping.set_all_pieces(pieces)
+    
+    def randomize_coefficients(self, extent: float = 0.25):
+        randomized_coefficients = []
+        for coef in self.coefficients:
+            randomized_coef = coef * random.uniform(1 - extent, 1 + extent)
+            randomized_coefficients.append(randomized_coef)
+        self.coefficients = tuple(randomized_coefficients)
 
     def create_game(self):
         rows = int(string_input("Please enter the number of rows: ", "regex", options=r"^\d+$"))

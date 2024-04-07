@@ -1,8 +1,12 @@
+import multiprocessing
 from GameFlow import GameFlow
+from GameTraining import GameTraining
 from Gameset import Gameset
 from UserSupervisor import string_input
 
+
 def main():
+    lock = multiprocessing.Lock()
     while True:
         action = string_input('What would you like to do? Either "create", "load", or "exit": ',
                               'select', options=['create', 'load', 'exit'])
@@ -11,14 +15,16 @@ def main():
             game = Gameset()
             game.create_game()
 
-            # save the game
+            # Start training process
+            training_process = GameTraining(game, lock)
+            training_process.start()
+
+            # Save the game
             save_option = string_input('Would you like to save this game? (yes/(no)): ', 'select', options=['yes', 'no', ''])
             if save_option.lower() == 'yes':
                 filename = input('Enter the filename to save the game: ')
                 game.save_game(filename)
         
-            # gametrain = GameFlow(game, True, True)
-            # gametrain.play_game()
             gamerun = GameFlow(game, False, True)
             gamerun.play_game()
         elif action == 'load':
@@ -30,11 +36,9 @@ def main():
                 gamerun.play_game()
             except FileNotFoundError:
                 print('Could not load the game.')
+
         elif action == 'exit':
             return
 
 if __name__ == "__main__":
     main()
-
-
-# search through the code for 'todo', and 'alert'

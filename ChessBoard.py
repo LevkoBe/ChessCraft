@@ -115,8 +115,7 @@ class ChessBoard:
 
         next_moves(row, col, piece.max_steps)
 
-        return possible_moves
-                
+        return possible_moves             
 
     def select_piece(self, piece_mapping: PieceMapping, player_turn: str, clicked_row: int, clicked_col: int):
 
@@ -180,7 +179,7 @@ class ChessBoard:
         return 0 <= row < self.rows and 0 <= col < self.columns
 
     def evaluate_position(self, white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]],
-                          piece_mapping: PieceMapping) -> float:
+                          piece_mapping: PieceMapping, coefficients: tuple[int, int, int, int]) -> float:
         # LevkoBe: current position evaluation:
         # value: piece value
         # mobility: possible_moves / by max_cells_reachable
@@ -196,20 +195,21 @@ class ChessBoard:
         # mobility: 0 - 1
         # advanced: 0 - 1
         # targeting: 0 - ?
+        # todo:
         # Nevertheless, coefficients can be added, as well as other criterias
         if not white_pieces:
             return float('-inf')
         if not black_pieces:
             return float('inf')
-        total_for_white = self._calculate_evaluation(white_pieces, piece_mapping, True)
-        total_for_black = self._calculate_evaluation(black_pieces, piece_mapping, False)
+        total_for_white = self._calculate_evaluation(white_pieces, piece_mapping, True, coefficients)
+        total_for_black = self._calculate_evaluation(black_pieces, piece_mapping, False, coefficients)
         # finding ratio looks more normalized than finding difference
         if total_for_white > total_for_black:
             return total_for_white / total_for_black
         return -total_for_black / total_for_white
 
     def _calculate_evaluation(self, pieces: list[tuple[str, int, int]], piece_mapping: PieceMapping,
-                              is_white: bool) -> float:
+                              is_white: bool, coefficients: tuple[int, int, int, int]) -> float:
         total = 0
         max_row = self.rows - 1
 
@@ -253,16 +253,17 @@ class ChessBoard:
                             target_square.piece).value * 100 if piece_mapping.get_piece(
                             target_square.piece).is_special else piece_mapping.get_piece(target_square.piece).value
                         break
-
-            current_value = ((mobility / piece_mapping.get_piece(
-                piece_symbol).max_cells_reachable + advanced) * cur_piece.value) + (targeting / cur_piece.value)
+            current_value = 0
+            current_value += coefficients[0] * (mobility / piece_mapping.get_piece(piece_symbol).max_cells_reachable) * cur_piece.value
+            current_value += coefficients[1] * advanced * cur_piece.value
+            current_value += coefficients[2] * targeting / cur_piece.value
             current_value = current_value if not piece_mapping.get_piece(
-                piece_symbol).is_special else 100 + current_value
+                piece_symbol).is_special else coefficients[3] + current_value
             total += current_value
 
         return total
 
-    def minimax(self, white_pieces, black_pieces, cur_pos: tuple[int, int], cur_move: tuple[int, int, str], max_depth: int,
+    def minimax(self, white_pieces, black_pieces, coefficients: tuple[int, int, int, int], cur_pos: tuple[int, int], cur_move: tuple[int, int, str], max_depth: int,
                 maximazing_player, piece_mapping: PieceMapping, positions_analyzed, alpha, beta, curdepth=0):
         positions_analyzed += 1
         # make local copies of everything
@@ -282,7 +283,7 @@ class ChessBoard:
         # check depth
         if curdepth == max_depth:
             return local_board.evaluate_position(white_pieces_local, black_pieces_local,
-                                                 piece_mapping), positions_analyzed
+                                                 piece_mapping, coefficients), positions_analyzed
         break_outer_loop = False
 
         if maximazing_player_local:
@@ -296,7 +297,7 @@ class ChessBoard:
                 possible_moves: list[tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece, player_turn_local, piece_mapping)
 
                 for cur_move in possible_moves:
-                    cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local,
+                    cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local, coefficients,
                                                                              cur_pos, cur_move,
                                                                              max_depth, maximazing_player_local, piece_mapping,
                                                                              positions_analyzed, alpha, beta, curdepth)
@@ -319,7 +320,7 @@ class ChessBoard:
                 possible_moves: list[tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece, player_turn_local, piece_mapping)
 
                 for cur_move in possible_moves:
-                    cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local,
+                    cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local, coefficients,
                                                                              cur_pos, cur_move,
                                                                              max_depth, maximazing_player_local, piece_mapping,
                                                                              positions_analyzed, alpha, beta, curdepth)
@@ -332,7 +333,7 @@ class ChessBoard:
             return min_val, positions_analyzed
 
     def find_best_move(self, white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]],
-                       piece_mapping: PieceMapping, player_turn: str) -> tuple[tuple[int, int], str, int, int]:
+                       piece_mapping: PieceMapping, player_turn: str, coefficients: tuple[int, int, int, int]) -> tuple[tuple[int, int], str, int, int]:
         move_to_value: dict[tuple[tuple[int, int, str], str, int, int], float] = {}
         maximal_depth = 2
         positions_analyzed = 0
@@ -345,7 +346,7 @@ class ChessBoard:
             possible_moves: list[tuple[int, int]] = self.get_possible_moves(row, col, cur_piece, player_turn, piece_mapping)
 
             for cur_move in possible_moves:
-                cur_move_value, positions_analyzed = self.minimax(white_pieces, black_pieces, cur_pos, cur_move,
+                cur_move_value, positions_analyzed = self.minimax(white_pieces, black_pieces, coefficients, cur_pos, cur_move,
                                                                   maximal_depth, maximazing_player, piece_mapping,
                                                                   positions_analyzed, alpha=-float("inf"), beta=float("inf"))
                 move_to_value[cur_move, symbol, row, col] = cur_move_value
