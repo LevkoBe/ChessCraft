@@ -13,21 +13,23 @@ class GameFlow:
         self.running = True
         self.white_pieces, self.black_pieces = white_black_division(self.game.board)
     
-    def play_game(self):
+    def play_game(self, maximum_moves=-1):
         ui = GameUI(self.game.board)
         moves_played = 0
         players = "wb"
         bots = (self.white_bot, self.black_bot)
+        coefficients_sets = (self.game.white_coefficients, self.game.black_coefficients)
 
-        while self.running: # while game lasts: (make one move)
+        while self.running and moves_played != maximum_moves:
             ui.process_events()
             ui.render_board(self.game.board, self.game.board.rows, self.game.board.columns, [], None, self.game.piece_mapping)
             current_player = players[moves_played % 2]
             current_bot = bots[moves_played % 2]
+            coefficients = coefficients_sets[moves_played % 2]
             if current_bot:
                 # bot's move
                 print(current_player, "is thinking...")
-                best_move, _, current_row, current_col = self.game.board.find_best_move(self.white_pieces, self.black_pieces, self.game.piece_mapping, current_player, self.game.coefficients)
+                best_move, _, current_row, current_col = self.game.board.find_best_move(self.white_pieces, self.black_pieces, self.game.piece_mapping, current_player, coefficients)
                 self.white_pieces, self.black_pieces = self.game.board.move_piece(current_row, current_col, best_move[0], best_move[1], best_move[2],
                                            self.game.piece_mapping.mapping.values(), self.white_pieces, self.black_pieces, self.game.piece_mapping)
             else:
@@ -35,14 +37,13 @@ class GameFlow:
                 self.player_select_and_move(ui, current_player)
                 
             # check winners
-            winner = self.game_finished()
-            if winner:
+            if self.game_finished():
                 break
 
             moves_played += 1
             
         pygame.quit()
-        return winner
+        return self.game.board.evaluate_position(self.white_pieces, self.black_pieces, self.game.piece_mapping, self.game.white_coefficients)
     
     def player_select_and_move(self, ui, current_player):
 
@@ -77,7 +78,8 @@ class GameFlow:
     
     def cheat(self, cheatcode, player_turn):
         if cheatcode == "hint":
-            target_square, piece, cur_row, cur_col = self.game.board.find_best_move(self.white_pieces, self.black_pieces, self.game.piece_mapping, player_turn, self.game.coefficients)
+            coefficients = self.game.white_coefficients if player_turn == 'w' else self.game.black_coefficients
+            target_square, piece, cur_row, cur_col = self.game.board.find_best_move(self.white_pieces, self.black_pieces, self.game.piece_mapping, player_turn, coefficients)
             print(f"best move is by {piece} from ({cur_row}, {cur_col}) to {target_square}")
         elif cheatcode == "reset":
             print("Resetting...")
@@ -87,7 +89,8 @@ class GameFlow:
             self.running = False
             pass
         elif cheatcode == "eval":
-            value_of_position = self.game.board.evaluate_position(self.white_pieces, self.black_pieces, self.game.piece_mapping, self.game.coefficients)
+            coefficients = self.game.white_coefficients if player_turn == 'w' else self.game.black_coefficients
+            value_of_position = self.game.board.evaluate_position(self.white_pieces, self.black_pieces, self.game.piece_mapping, coefficients)
             print(f"Position is evaluated as {value_of_position}")
         elif cheatcode == "help":
             print("Available cheats:")

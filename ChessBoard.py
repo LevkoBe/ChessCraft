@@ -203,10 +203,13 @@ class ChessBoard:
             return float('inf')
         total_for_white = self._calculate_evaluation(white_pieces, piece_mapping, True, coefficients)
         total_for_black = self._calculate_evaluation(black_pieces, piece_mapping, False, coefficients)
-        # finding ratio looks more normalized than finding difference
-        if total_for_white > total_for_black:
-            return total_for_white / total_for_black
-        return -total_for_black / total_for_white
+
+        # Normalize the evaluation values
+        normalized_total_for_white = total_for_white / (total_for_white + total_for_black)
+        normalized_total_for_black = total_for_black / (total_for_white + total_for_black)
+
+        # Return the difference between the normalized values
+        return normalized_total_for_white - normalized_total_for_black
 
     def _calculate_evaluation(self, pieces: list[tuple[str, int, int]], piece_mapping: PieceMapping,
                               is_white: bool, coefficients: tuple[int, int, int, int]) -> float:

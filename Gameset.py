@@ -12,16 +12,29 @@ class Gameset:
         self.board: ChessBoard = board
         self.piece_mapping: PieceMapping = PieceMapping()
         # coefficients for: mobility, advancement, targeting, and special
-        self.coefficients: tuple[int, int, int, int] = (1, 1, 1, 100)
+        self.white_coefficients: tuple[int, int, int, int] = (1, 1, 1, 100)
+        self.black_coefficients: tuple[int, int, int, int] = (1, 1, 1, 100)
         if pieces:
             self.piece_mapping.set_all_pieces(pieces)
     
-    def randomize_coefficients(self, extent: float = 0.25):
+    def randomize_coefficients(self, randomize_white=False, randomize_black=True, extent: float = 0.5):
         randomized_coefficients = []
-        for coef in self.coefficients:
-            randomized_coef = coef * random.uniform(1 - extent, 1 + extent)
-            randomized_coefficients.append(randomized_coef)
-        self.coefficients = tuple(randomized_coefficients)
+        
+        if randomize_white:
+            for coef in self.white_coefficients:
+                randomized_coef = coef * random.uniform(1 - extent, 1 + extent)
+                randomized_coefficients.append(randomized_coef)
+        
+            self.white_coefficients = tuple(randomized_coefficients)
+        
+        randomized_coefficients = []
+        
+        if randomize_black:
+            for coef in self.black_coefficients:
+                randomized_coef = coef * random.uniform(1 - extent, 1 + extent)
+                randomized_coefficients.append(randomized_coef)
+        
+            self.black_coefficients = tuple(randomized_coefficients)
 
     def create_game(self):
         rows = int(string_input("Please enter the number of rows: ", "regex", options=r"^\d+$"))
