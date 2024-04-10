@@ -30,11 +30,12 @@ class GeneticAlgorithm:
         self.num_games_in_generation = num_games_in_generation
         self.num_best_children = num_best_children
         self.mutation_rate = mutation_rate
-        self.best_coeffs_for_generation = [initial_gameset.coefficients]
+        self.best_coeffs_for_generation = [initial_gameset.white_coefficients]
 
     def update_coefficients(self, coeffs):
         self.best_coeffs_for_generation.append(coeffs)
-        self.initial_gameset.coefficients = self.best_coeffs_for_generation[-1]
+        self.initial_gameset.white_coefficients = self.best_coeffs_for_generation[-1]
+        self.initial_gameset.black_coefficients = self.best_coeffs_for_generation[-1]
         print(f"New coefficients: {self.best_coeffs_for_generation[-1]}")
     
     def train(self, num_moves):
@@ -58,7 +59,7 @@ class GeneticAlgorithm:
             games_to_remove = []
             for game, winner in results:
                 if winner == 2:  # black won
-                    self.update_coefficients(game.game.coefficients)
+                    self.update_coefficients(game.game.black_coefficients)
                     return
                 elif not winner:  # game is still ongoing
                     continue
@@ -73,11 +74,11 @@ class GeneticAlgorithm:
                 return
             
             # Select the best gamesets to retain, based on evaluation with original coefficients, and update the original coefficients
-            sorted_generation = sorted(current_generation, key=lambda x: x.game.board.evaluate_position(x.white_pieces, x.black_pieces, x.game.piece_mapping, self.initial_gameset.coefficients))
+            sorted_generation = sorted(current_generation, key=lambda x: x.game.board.evaluate_position(x.white_pieces, x.black_pieces, x.game.piece_mapping, self.initial_gameset.white_coefficients))
             best_gamesets = sorted_generation[:self.num_best_children]
-            print(f"Best results: {[game.game.board.evaluate_position(game.white_pieces, game.black_pieces, game.game.piece_mapping, self.initial_gameset.coefficients) for game in best_gamesets]}")
-            print(f"Best coefficients: {[game.game.coefficients for game in best_gamesets]}")
-            self.update_coefficients(best_gamesets[0].game.coefficients)
+            print(f"Best results: {[game.game.board.evaluate_position(game.white_pieces, game.black_pieces, game.game.piece_mapping, self.initial_gameset.white_coefficients) for game in sorted_generation]}")
+            print(f"Best coefficients: {[game.game.black_coefficients for game in sorted_generation]}")
+            self.update_coefficients(best_gamesets[0].game.black_coefficients)
             
             children = []
             # Generate children from the best-performing gamesets
