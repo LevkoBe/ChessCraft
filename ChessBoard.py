@@ -198,9 +198,9 @@ class ChessBoard:
         # todo:
         # Nevertheless, coefficients can be added, as well as other criterias
         if not white_pieces:
-            return float('-inf')
+            return -1
         if not black_pieces:
-            return float('inf')
+            return 1
         total_for_white = self._calculate_evaluation(white_pieces, piece_mapping, True, coefficients)
         total_for_black = self._calculate_evaluation(black_pieces, piece_mapping, False, coefficients)
 

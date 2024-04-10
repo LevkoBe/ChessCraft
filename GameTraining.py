@@ -1,37 +1,83 @@
 
 import copy
-import multiprocessing
 from GameFlow import GameFlow
 from Gameset import Gameset
 
+# using genetic algorithm, we will follow similar steps to these:
+# 1. original gameset -> 2. mutations => children -> 3. play -> 4. selecting best -> repeat 2-4 until game-over
+# result is a set of coefficients for each generation
 
-class GameTraining(multiprocessing.Process):
-    def __init__(self, main_game: Gameset, lock: multiprocessing.Lock):
-        super().__init__()
-        self.main_game = main_game
-        self.game_copy = copy.deepcopy(main_game)
-        self.game_copy.randomize_coefficients(False, True, 0.5)
-        self.good_coefficients = [self.main_game.white_coefficients]
-        self.lock = lock
+# 1. Initialize the initial gameset with coefficients.
+# 2. Create a generation of game flows, each with a randomized copy of the initial gameset.
+# 3. Repeat until one game flow ends with black winning, or all end with white winning:
+#    a. Play a fixed number of moves in each game flow.
+#    b. Evaluate the fitness (game board evaluation with current coefficients) for each game flow.
+#    c. Select the best-performing game flows (fitness function is game.board.evaluate_position(original_white_coeffs))
+#    d. Generate children from the best-performing game flows with randomized coefficients.
+#    e. Update the current generation with the best-performing game flows and their children.
+#    f. Save the coefficients for the generation
+# 4. Select the winning/best coefficients from the final generation.
+# 5. Start again with the initial gameset using the winning/best coefficients.
 
-    def run(self):
-        while True: # create new game
-            game = copy.deepcopy(self.game_copy)
-            gametrain = GameFlow(game, True, True)
-            previous_pos_eval = game.board.evaluate_position(gametrain.white_pieces, gametrain.black_pieces, game.piece_mapping, game.white_coefficients)
-            while not gametrain.game_finished(): # play N moves
-                print(previous_pos_eval)
-                game.randomize_coefficients()
-                moves_to_make = 10
-                current_pos_eval = gametrain.play_game(moves_to_make)
-                if current_pos_eval < previous_pos_eval: # better for black
-                    self.good_coefficients.append(game.black_coefficients)
-                    self.update_coefficients()
-                previous_pos_eval = current_pos_eval
 
-    def update_coefficients(self):
-        avg_coefficients = [sum(x) / len(self.good_coefficients) for x in zip(*self.good_coefficients)]
-        print(avg_coefficients)
-        with self.lock:
-            self.main_game.black_coefficients = tuple(avg_coefficients)
-            self.game_copy.black_coefficients = tuple(avg_coefficients)
+# fitness function is game.board.evaluate_position() with initial coefficients
+
+
+class GeneticAlgorithm:
+    def __init__(self, initial_gameset: Gameset, num_games_in_generation: int = 10, num_best_children: int = 5, mutation_rate: float = 0.5):
+        self.initial_gameset = initial_gameset
+        self.num_games_in_generation = num_games_in_generation
+        self.num_best_children = num_best_children
+        self.mutation_rate = mutation_rate
+        self.best_coeffs_for_generation = [initial_gameset.coefficients]
+
+    def update_coefficients(self, coeffs):
+        self.best_coeffs_for_generation.append(coeffs)
+        self.initial_gameset.coefficients = self.best_coeffs_for_generation[-1]
+        print(f"New coefficients: {self.best_coeffs_for_generation[-1]}")
+    
+    def train(self, num_moves):
+        current_generation: list[GameFlow] = [GameFlow(copy.deepcopy(self.initial_gameset), True, True)]
+        while True:
+            self.play_a_game(num_moves, current_generation)
+            if not self.current_generation:
+                break
+
+    def play_a_game(self, num_moves, current_generation: list[GameFlow]):
+        while True:
+            # Play moves for each gameset in the current generation
+            games_to_remove = []
+
+            for game in current_generation:
+                game.play_game(num_moves)
+                winner = game.game_finished()
+                if winner == 2:  # black won
+                    self.update_coefficients(game.game.coefficients)
+                    return
+                elif not winner:  # game is still ongoing
+                    continue
+                else:  # white won
+                    games_to_remove.append(game)
+
+            for game in games_to_remove:
+                current_generation.remove(game)
+        
+            # if we lose in every game flow, start again
+            if not current_generation:
+                return
+            
+            # Select the best gamesets to retain, based on evaluation with original coefficients, and update the original coefficients
+            sorted_generation = sorted(current_generation, key=lambda x: x.game.board.evaluate_position(x.white_pieces, x.black_pieces, x.game.piece_mapping, self.initial_gameset.coefficients))
+            best_gamesets = sorted_generation[:self.num_best_children]
+            self.update_coefficients(best_gamesets[0].game.coefficients)
+            
+            children = []
+            # Generate children from the best-performing gamesets
+            for x in range(self.num_games_in_generation - self.num_best_children):
+                parent = best_gamesets[x // self.num_best_children]
+                child_gameset = copy.deepcopy(parent.game)
+                child_gameset.randomize_coefficients(self.mutation_rate)
+                children.append(GameFlow(child_gameset, True, True))
+        
+            # Update current generation with the best gamesets and children
+            current_generation = best_gamesets + children

@@ -1,6 +1,6 @@
 import multiprocessing
 from GameFlow import GameFlow
-from GameTraining import GameTraining
+from GameTraining import GeneticAlgorithm
 from Gameset import Gameset
 from UserSupervisor import string_input
 
@@ -16,8 +16,8 @@ def main():
             game.create_game()
 
             # Start training process
-            training_process = GameTraining(game, lock)
-            training_process.start()
+            training_algorithm = GeneticAlgorithm(game)
+            training_algorithm.train(2)
 
             # Save the game
             save_option = string_input('Would you like to save this game? (yes/(no)): ', 'select', options=['yes', 'no', ''])
