@@ -15,16 +15,26 @@ class ChessPiece:
         self.max_cells_reachable = None
         self.value = None
         self.is_special: bool = False               # most important piece of the game
+        self.trap: bool = 'x' in optional           # when captured, kills the opponent's piece
         self.ninja: bool = 'n' in optional          # can change direction during the move
+        self.scary: bool = 'y' in optional          # moves other pieces when making a move (as though they flee)
         self.demon: bool = 'd' in optional          # lives in others (gets another "body" when captures)
+        self.leader: bool = 'l' in optional         # moves other pieces when making a move (as though they follow him)
         self.fusion: bool = 'f' in optional         # combining two or more pieces into a single, more powerful entity
         self.shooter: bool = 's' in optional        # doesn't move when capturing others
         self.cloning: bool = 'c' in optional        # clones on each move
         self.grouping: bool = 'g' in optional       # can gather on one cell in quantities more than 1
+        self.fortress: bool = '+' in optional       # can spawn other pieces
         self.promotion: bool = 'p' in optional      # can promote to another piece after reaching the end of the board
         self.invisible: bool = 'v' in optional      # invisible on the board
+        self.explosive: bool = 'e' in optional      # explodes when captured
         self.insatiable: bool = 'i' in optional     # after capture makes another move
         self.unbreakable: bool = 'u' in optional    # cannot be captured
+        self.random_self: bool = '?' in optional    # can change itself into another piece during the move
+        self.radioactive: bool = 'r' in optional    # kills other pieces when approaches them
+        self.random_others: bool = 'o' in optional  # can change other pieces into another piece during the move
+        self.time_traveler: bool = 't' in optional  # undoes opponent's moves in the area where he goes
+        self.active_learner: bool = 'a' in optional # learns new moves from others (my favourite)
 
     def to_string(self) -> str:
         directions_str = ' '.join([f"{('+' if d[0] >= 0 else '')}{d[0]},{('+' if d[1] >= 0 else '')}{d[1]}" for d in self.directions])

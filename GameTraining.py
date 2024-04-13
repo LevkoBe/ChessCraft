@@ -11,6 +11,7 @@ class GeneticAlgorithm:
         self.mutation_rate = mutation_rate
         self.best_coeffs_for_generation = [initial_gameset.white_coefficients]
         self.evaluation_scores = []
+        self.generation_count = 0  # Initialize generation count
 
     def update_coefficients(self, coeffs):
         self.best_coeffs_for_generation.append(coeffs)
@@ -20,11 +21,32 @@ class GeneticAlgorithm:
 
     def train(self, num_moves):
         current_generation: list[GameFlow] = [GameFlow(copy.deepcopy(self.initial_gameset), True, True)]
+        with open("generation_logs.txt", "a") as f:
+            f.write("New training started\n")
         while True:
-            self.play_a_game(num_moves, current_generation)
+            victory = self.play_a_game(num_moves, current_generation)
+            if victory:
+                self.log_black_win(self.generation_count)
             some_condition = True
             if not some_condition:
                 break
+
+    def log_black_win(self, generation_count):
+        with open("generation_logs.txt", "a") as f:
+            f.write(f"generation #{generation_count}: black won\n")
+
+    def log_generation_info(self, position_evaluation, coefficients):
+        rounded_coeffs = tuple([round(coeff, 2) for coeff in coefficients])  # Round coefficients to hundredths
+        with open("generation_logs.txt", "a") as f:
+            f.write(f"generation #{self.generation_count}; position evaluated: {position_evaluation}; coefficients: {rounded_coeffs}\n")
+        self.generation_count += 1  # Increment generation count after each generation
+
+    def play_moves(self, args):
+        game, num_moves = args
+        game.play_game(num_moves)
+        winner = game.game_finished()
+        score = game.game.board.evaluate_position(game.white_pieces, game.black_pieces, game.game.piece_mapping, self.initial_gameset.white_coefficients)
+        return game, winner, score
 
     def play_a_game(self, num_moves, current_generation: list[GameFlow]):
         while True:
@@ -43,20 +65,18 @@ class GeneticAlgorithm:
                 self.evaluation_scores.append((game, score))
                 if winner == 2:  # black won
                     self.update_coefficients(game.game.black_coefficients)
-                    return
+                    return True
                 elif not winner:  # game is still ongoing
                     continue
                 else:  # white won
                     games_to_remove.append(game)
 
-            # Remove game flows that need to be removed
-            for game in games_to_remove:
-                print(f"Removing game: {game}")
-                current_generation.remove(game)
+            # Remove games from evaluation_scores
+            self.evaluation_scores = [entry for entry in self.evaluation_scores if entry[0] not in games_to_remove]
 
             # if we lose in every game flow, start again
-            if not current_generation:
-                return
+            if not self.evaluation_scores:
+                return False
 
             # Select the best gamesets to retain, based on evaluation with original coefficients, and update the original coefficients
             best_gamesets = sorted(self.evaluation_scores, key=lambda x: x[1])[:self.num_best_children]
@@ -75,9 +95,5 @@ class GeneticAlgorithm:
             # Update current generation with the best gamesets and children
             current_generation = [game for game, _ in best_gamesets] + children
 
-    def play_moves(self, args):
-        game, num_moves = args
-        game.play_game(num_moves)
-        winner = game.game_finished()
-        score = game.game.board.evaluate_position(game.white_pieces, game.black_pieces, game.game.piece_mapping, self.initial_gameset.white_coefficients)
-        return game, winner, score
+            # Log information for the current generation
+            self.log_generation_info(best_gamesets[0][1], best_gamesets[0][0].game.black_coefficients)

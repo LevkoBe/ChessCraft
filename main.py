@@ -25,7 +25,7 @@ def main():
                 filename = input('Enter the filename to save the game: ')
                 game.save_game(filename)
         
-            gamerun = GameFlow(game, False, True)
+            gamerun = GameFlow(game, True, True)
             gamerun.play_game()
         elif action == 'load':
             filename = input('Enter the filename to load the game: ')
