@@ -1,10 +1,10 @@
 import copy
 import multiprocessing
-from GameFlow import GameFlow
 from Gameset import Gameset
+from TrainingFlow import TrainingFlow
 
 class GeneticAlgorithm:
-    def __init__(self, initial_gameset: Gameset, num_games_in_generation: int = 10, num_best_children: int = 5, mutation_rate: float = 110.2):
+    def __init__(self, initial_gameset: Gameset, filename: str, num_games_in_generation: int = 10, num_best_children: int = 5, mutation_rate: float = 110.2):
         self.initial_gameset = initial_gameset
         self.num_games_in_generation = num_games_in_generation
         self.num_best_children = num_best_children
@@ -12,15 +12,18 @@ class GeneticAlgorithm:
         self.best_coeffs_for_generation = [initial_gameset.white_coefficients]
         self.evaluation_scores = []
         self.generation_count = 0  # Initialize generation count
+        self.filename = filename
 
     def update_coefficients(self, coeffs):
         self.best_coeffs_for_generation.append(coeffs)
         self.initial_gameset.white_coefficients = self.best_coeffs_for_generation[-1]
         self.initial_gameset.black_coefficients = self.best_coeffs_for_generation[-1]
-        print(f"New coefficients: {self.best_coeffs_for_generation[-1]}")
+        best_coefficients =  self.best_coeffs_for_generation[-1]
+        print(f"New coefficients: {best_coefficients}")
+        self.initial_gameset.save_game(self.filename)
 
     def train(self, num_moves):
-        current_generation: list[GameFlow] = [GameFlow(copy.deepcopy(self.initial_gameset), True, True)]
+        current_generation: list[TrainingFlow] = [TrainingFlow(copy.deepcopy(self.initial_gameset))]
         with open("generation_logs.txt", "a") as f:
             f.write("New training started\n")
         while True:
@@ -48,7 +51,7 @@ class GeneticAlgorithm:
         score = game.game.board.evaluate_position(game.white_pieces, game.black_pieces, game.game.piece_mapping, self.initial_gameset.white_coefficients)
         return game, winner, score
 
-    def play_a_game(self, num_moves, current_generation: list[GameFlow]):
+    def play_a_game(self, num_moves, current_generation: list[TrainingFlow]):
         while True:
             # Define a multiprocessing pool
             pool = multiprocessing.Pool()
@@ -90,7 +93,7 @@ class GeneticAlgorithm:
                 parent = best_gamesets[x // self.num_best_children][0]
                 child_gameset = copy.deepcopy(parent.game)
                 child_gameset.randomize_coefficients(self.mutation_rate)
-                children.append(GameFlow(child_gameset, True, True))
+                children.append(TrainingFlow(child_gameset))
 
             # Update current generation with the best gamesets and children
             current_generation = [game for game, _ in best_gamesets] + children

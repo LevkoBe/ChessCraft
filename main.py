@@ -4,6 +4,9 @@ from GameTraining import GeneticAlgorithm
 from Gameset import Gameset
 from UserSupervisor import string_input
 
+def train_game(game, filename):
+    training_algorithm = GeneticAlgorithm(game, filename)
+    training_algorithm.train(10)
 
 def main():
     lock = multiprocessing.Lock()
@@ -15,15 +18,15 @@ def main():
             game = Gameset()
             game.create_game()
 
-            # Start training process
-            # training_algorithm = GeneticAlgorithm(game)
-            # training_algorithm.train(2)
-
             # Save the game
             save_option = string_input('Would you like to save this game? (yes/(no)): ', 'select', options=['yes', 'no', ''])
             if save_option.lower() == 'yes':
                 filename = "saved_games/" + input('Enter the filename to save the game: ') + ".json"
                 game.save_game(filename)
+
+            # Start training process in parallel
+            training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
+            training_process.start()
         
             gamerun = GameFlow(game, False, True)
             gamerun.play_game()
@@ -32,6 +35,11 @@ def main():
             game = Gameset()
             try:
                 game.load_game(filename)
+                
+                # Start training process in parallel
+                training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
+                training_process.start()
+
                 gamerun = GameFlow(game, False, True)
                 gamerun.play_game()
             except FileNotFoundError:

@@ -271,3 +271,8 @@ generation #77; position evaluated: -0.325179097669492; coefficients: (0.54, 0.2
 generation #78; position evaluated: -0.3317731238564542; coefficients: (0.54, 0.24, 0.39, 156.6)
 generation #79; position evaluated: -0.32554891198141905; coefficients: (0.53, 0.28, 0.31, 103.79)
 generation #80: black won
+New training started
+generation #0; position evaluated: 0.07199393947142219; coefficients: (1, 1, 1, 100)
+generation #1; position evaluated: -0.013009641485554668; coefficients: (0.79, 1.1, 1.33, 146.5)
+New training started
+generation #0; position evaluated: 2.1918829239186977e-05; coefficients: (0.79, 1.1, 1.33, 146.5)
