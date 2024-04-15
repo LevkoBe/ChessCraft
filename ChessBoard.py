@@ -5,7 +5,6 @@ from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 from PieceMapping import PieceMapping
 import copy
-from UserSupervisor import string_input
 
 
 class ChessBoard:

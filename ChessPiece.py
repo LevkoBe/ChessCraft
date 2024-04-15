@@ -1,3 +1,4 @@
+import json
 import re
 from typing import List, Tuple
 from Move import Move
@@ -7,14 +8,14 @@ def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
 
 
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, moves: List[str], max_steps: str, optional: List[str]):
+    def __init__(self, name: str, symbol: str, moves: List[str], max_steps: str, optional: List[str], max_cells_reachable: int = 0, value: int = 0):
         self.name = name
         self.symbol = symbol
         self.moves: List[Move] = self.get_moves(moves)
         self.max_steps: int = int(max_steps)
-        self.max_cells_reachable = None
-        self.value = None
-        self.is_special: bool = False               # most important piece of the game
+        self.max_cells_reachable = max_cells_reachable
+        self.value: int = value
+        self.is_special: bool = False               # most important piece of the game          # '!' in special
         self.trap: bool = 'x' in optional           # when captured, kills the opponent's piece
         self.ninja: bool = 'n' in optional          # can change direction during the move
         self.scary: bool = 'y' in optional          # moves other pieces when making a move (as though they flee)
@@ -37,14 +38,65 @@ class ChessPiece:
         self.active_learner: bool = 'a' in optional # learns new moves from others (my favourite)
 
     def to_string(self) -> str:
-        directions_str = ' '.join([f"{('+' if d[0] >= 0 else '')}{d[0]},{('+' if d[1] >= 0 else '')}{d[1]}" for d in self.directions])
-        return f"{self.name};{self.symbol};{directions_str};{self.max_steps}"
-
+        moves_list = [[move.x, move.y, move.moving, move.capturing] for move in self.moves]
+        optional_str = ''.join([
+            'x' if self.trap else '',
+            'n' if self.ninja else '',
+            'y' if self.scary else '',
+            'd' if self.demon else '',
+            'l' if self.leader else '',
+            'f' if self.fusion else '',
+            's' if self.shooter else '',
+            'c' if self.cloning else '',
+            'g' if self.grouping else '',
+            '+' if self.fortress else '',
+            'p' if self.promotion else '',
+            'v' if self.invisible else '',
+            'e' if self.explosive else '',
+            'i' if self.insatiable else '',
+            'u' if self.unbreakable else '',
+            '?' if self.random_self else '',
+            'r' if self.radioactive else '',
+            'o' if self.random_others else '',
+            't' if self.time_traveler else '',
+            'a' if self.active_learner else '',
+            '!' if self.is_special else ''
+        ])
+        piece_dict = {
+            "name": self.name,
+            "symbol": self.symbol,
+            "moves": moves_list,
+            "max_steps": self.max_steps,
+            "value": self.value,
+            "max_cells_reachable": self.max_cells_reachable,
+            "optional": optional_str
+        }
+        return json.dumps(piece_dict)
+    
     @classmethod
     def from_string(cls, piece_string: str):
-        name, symbol, directions_str, max_steps = piece_string.split(';')
-        directions = [dir_str for dir_str in directions_str.split(' ')]
-        return cls(name, symbol, directions, max_steps)
+        piece_dict = json.loads(piece_string)
+        moves_list = [Move(move[0], move[1], move[2], move[3]) for move in piece_dict["moves"]]
+        optional_str = piece_dict["optional"]
+        optional_str = optional_str.ljust(20, '0')  # Pad with zeros if necessary
+        piece = cls(
+            piece_dict["name"],
+            piece_dict["symbol"],
+            [],
+            piece_dict["max_steps"],
+            optional_str,
+            piece_dict["max_cells_reachable"],
+            piece_dict["value"]
+        )
+        piece.moves = moves_list
+        (
+            piece.trap, piece.ninja, piece.scary, piece.demon, piece.leader,
+            piece.fusion, piece.shooter, piece.cloning, piece.grouping, piece.fortress,
+            piece.promotion, piece.invisible, piece.explosive, piece.insatiable,
+            piece.unbreakable, piece.random_self, piece.radioactive, piece.random_others,
+            piece.time_traveler, piece.active_learner, piece.is_special
+        ) = (optional_str.find(c) != -1 for c in 'xnydlfscg+pveiu?rort!')
+        return piece
 
     def get_moves(self, moves_list: List[str]) -> List[Tuple[int, int]]:
         moves: List[Move] = []
