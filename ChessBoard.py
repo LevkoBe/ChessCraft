@@ -138,7 +138,7 @@ class ChessBoard:
     def move_piece(self, current_row: int, current_col: int, clicked_row: int, clicked_col: int, promo_char: Optional[str], piece_characters: str,
                    white_pieces: list[tuple[str, int, int]], black_pieces: list[tuple[str, int, int]], piece_mapping: PieceMapping) -> tuple[list[tuple[str, int, int]], tuple[list[tuple[str, int, int]]]]:
         target_cell = self.board[clicked_row][clicked_col]
-        cur_board_piece: ChessBoardPiece = self.board[current_row][current_col]
+        cur_board_piece: ChessBoardPiece = copy.deepcopy(self.board[current_row][current_col])
         cur_chess_piece = piece_mapping.get_piece(cur_board_piece.piece)
 
         # change the position of the piece
@@ -153,7 +153,7 @@ class ChessBoard:
             self.board[current_row][current_col] = None
         if cur_chess_piece.promotion and \
             ((cur_board_piece.color == 'w' and clicked_row == 0) or (cur_board_piece.color == 'b' and clicked_row == self.rows - 1)):
-            cur_board_piece = ChessBoardPiece(promo_char, cur_board_piece.color)
+            cur_board_piece.piece = promo_char
             if cur_board_piece.color == 'w':
                 white_pieces = [(promo_char, clicked_row, clicked_col) if piece[1] == clicked_row and piece[2] == clicked_col
                                 else piece for piece in white_pieces]
@@ -168,10 +168,10 @@ class ChessBoard:
                 black_pieces = [piece for piece in black_pieces if piece[1] != clicked_row or piece[2] != clicked_col]
             else:
                 white_pieces = [piece for piece in white_pieces if piece[1] != clicked_row or piece[2] != clicked_col]
-            # special
-            if cur_chess_piece.demon: ### todo: maybe, adjust?
+            # special: demon
+            if cur_chess_piece.demon:
                 self.board[current_row][current_col] = copy.deepcopy(cur_board_piece)
-                cur_board_piece.piece = target_cell.piece
+                self.board[clicked_row][clicked_col].piece = target_cell.piece
         return white_pieces, black_pieces
 
     def is_valid_position(self, row: int, col: int) -> bool:
@@ -293,10 +293,11 @@ class ChessBoard:
             for piece in white_pieces_local:
                 if break_outer_loop:
                     break
-                symbol, row, col = piece
+                _, row, col = piece
+                symbol = local_board.board[row][col].piece
                 cur_pos = (row, col)
                 cur_piece = piece_mapping.get_piece(symbol)
-                possible_moves: list[tuple[int, int]] = local_board.get_possible_moves(row, col, cur_piece, player_turn_local, piece_mapping)
+                possible_moves: list[tuple[int, int, str]] = local_board.get_possible_moves(row, col, cur_piece, player_turn_local, piece_mapping)
 
                 for cur_move in possible_moves:
                     cur_move_value, positions_analyzed = local_board.minimax(white_pieces_local, black_pieces_local, coefficients,

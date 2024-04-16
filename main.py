@@ -6,10 +6,10 @@ from UserSupervisor import string_input
 
 def train_game(game, filename):
     training_algorithm = GeneticAlgorithm(game, filename)
-    training_algorithm.train(10)
+    training_algorithm.train()
 
 def main():
-    lock = multiprocessing.Lock()
+    filename = None
     while True:
         action = string_input('What would you like to do? Either "create", "load", or "exit": ',
                               'select', options=['create', 'load', 'exit'])
