@@ -25,8 +25,10 @@ def main():
                 game.save_game(filename)
 
             # Start training process in parallel
-            training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
-            training_process.start()
+            train_option = string_input('Would you like to start bot training? ((yes)/no): ', 'select', options=['yes', 'no', ''])
+            if train_option.lower() != 'no':
+                training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
+                training_process.start()
         
             gamerun = GameFlow(game, False, True)
             gamerun.play_game()
@@ -37,8 +39,10 @@ def main():
                 game.load_game(filename)
                 
                 # Start training process in parallel
-                training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
-                training_process.start()
+                train_option = string_input('Would you like to start bot training? ((yes)/no): ', 'select', options=['yes', 'no', ''])
+                if train_option.lower() != 'no':
+                    training_process = multiprocessing.Process(target=train_game, args=(game,filename,))
+                    training_process.start()
 
                 gamerun = GameFlow(game, False, True)
                 gamerun.play_game()

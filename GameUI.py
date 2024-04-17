@@ -1,7 +1,7 @@
 
+import os
 import pygame
 from ChessBoard import ChessBoard
-from Gameset import Gameset
 from PieceMapping import PieceMapping
 
 
@@ -11,6 +11,8 @@ HIGHLIGHT_COLOR = (255, 255, 0)
 
 PLAYER1_COLOR = "#45ab89"
 PLAYER2_COLOR = "#FFD833"
+SVG_FOLDER = "./SVGs"
+PIECE_SIZE = (64, 64)
 
 
 class GameUI:
@@ -48,12 +50,29 @@ class GameUI:
                     symbol = piece.piece
                     font = pygame.font.Font(None, 36)
                     if piece.color == 'b':
-                        text_color = PLAYER1_COLOR
+                        player_color = PLAYER1_COLOR
                     else:
-                        text_color = PLAYER2_COLOR
-                    text = font.render(symbol, True, text_color)
-                    text_rect = text.get_rect(center=(col * self.square_size + self.square_size // 2, row * self.square_size + self.square_size // 2))
-                    self.screen.blit(text, text_rect)
+                        player_color = PLAYER2_COLOR
+                    # Check if SVG file exists for the symbol
+                    svg_file = os.path.join(SVG_FOLDER, f"{symbol}.svg")
+                    if os.path.exists(svg_file):
+                        # Change SVG color dynamically
+                        with open(svg_file, "r", encoding='utf-8') as f:
+                            content = f.read()
+                        new_SVG = content.replace("black", player_color)
+                        new_svg_file = "tmp/modified.svg"
+                        with open(new_svg_file, "w", encoding='utf-8') as f:
+                            f.write(new_SVG)
+                        piece_image = pygame.image.load(new_svg_file)
+                        piece_image.set_colorkey(pygame.Color(player_color))
+                        piece_image = pygame.transform.scale(piece_image, PIECE_SIZE)
+                        piece_rect = piece_image.get_rect(center=(col * self.square_size + self.square_size // 2, row * self.square_size + self.square_size // 2))
+                        self.screen.blit(piece_image, piece_rect)
+                    else:
+                        # Render text if SVG file doesn't exist
+                        text = font.render(symbol, True, player_color)
+                        text_rect = text.get_rect(center=(col * self.square_size + self.square_size // 2, row * self.square_size + self.square_size // 2))
+                        self.screen.blit(text, text_rect)
 
         # selected piece
         if selected_square is not None:

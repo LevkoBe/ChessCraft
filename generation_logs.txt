@@ -458,3 +458,82 @@ generation #10; position evaluated: -0.0034540443255045017; coefficients: (0.94,
 generation #11; position evaluated: -0.003845865599498177; coefficients: (0.73, 0.38, 0.53, 60.89)
 generation #12; position evaluated: -0.006247985605537576; coefficients: (1.02, 0.76, 0.68, 223.98)
 generation #13; position evaluated: -0.0034136449052011297; coefficients: (1.22, 0.66, 0.6, 291.91)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.22, 0.66, 0.6, 291.91)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.22, 0.66, 0.6, 291.91)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.22, 0.66, 0.6, 291.91)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.22, 0.66, 0.6, 291.91)
+generation #1; position evaluated: 0.0005990224152929713; coefficients: (1.22, 0.66, 0.6, 291.91)
+generation #2; position evaluated: -0.0007516759479130886; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+generation #1; position evaluated: 0.00029196440472051277; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (0.95, 0.36, 0.36, 426.79)
+generation #1; position evaluated: 0.00029196440472051277; coefficients: (0.95, 0.36, 0.36, 426.79)
+generation #2; position evaluated: -0.001203464693566858; coefficients: (1.92, 0.66, 0.45, 693.18)
+generation #3; position evaluated: -0.0021543653509520366; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+generation #1; position evaluated: 0.00031279984799875704; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+generation #1; position evaluated: 0.00031279984799875704; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.92, 0.66, 0.45, 693.18)
+generation #1; position evaluated: 0.00031279984799875704; coefficients: (1.92, 0.66, 0.45, 693.18)
+generation #2; position evaluated: -0.00026715685856920635; coefficients: (2.06, 0.5, 0.52, 405.51)
+generation #3; position evaluated: -0.002319922006234987; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (2.45, 0.73, 0.47, 247.86)
+generation #1; position evaluated: 0.001032099917836704; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (2.45, 0.73, 0.47, 247.86)
+generation #1; position evaluated: 0.001032099917836704; coefficients: (2.45, 0.73, 0.47, 247.86)
+New training started
+generation #0; position evaluated: 0.0; coefficients: (1.07, 0.53, 0.59, 109.27)
