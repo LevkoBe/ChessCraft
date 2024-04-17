@@ -45,7 +45,7 @@ class GameFlow:
         pygame.quit()
         return self.game.board.evaluate_position(self.white_pieces, self.black_pieces, self.game.piece_mapping, self.game.white_coefficients)
     
-    def player_select_and_move(self, ui, current_player):
+    def player_select_and_move(self, ui: GameUI, current_player):
 
         def player_select_piece():
             while True:
