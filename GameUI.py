@@ -22,7 +22,7 @@ class GameUI:
         screen_width, screen_height = self.set_window_dimensions(board.rows, board.columns)
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
-        pygame.display.set_caption("NO-Chess Game")
+        pygame.display.set_caption("ChessCraft")
         self.clock = pygame.time.Clock()
 
     def process_events(self):
