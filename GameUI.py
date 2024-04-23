@@ -114,40 +114,41 @@ class GameUI:
         return mouse_y // self.square_size, mouse_x // self.square_size, cheatcode
 
     def set_color_palette(self, number):
+
+        def set_specific_color_palette(number):
+            color_palettes = {
+                0: ("#003366", "#66CCFF", "#FF6600", "#FFFFFF"),
+                1: ("#00563F", "#8FB339", "#FFD700", "#FFFFFF"),
+                2: ("#FF6F61", "#FFD166", "#6B5B95", "#FFFFFF"),
+                3: ("#6A0572", "#AB83A1", "#3C1053", "#FFFFFF"),
+                4: ("#D9BF77", "#A89F68", "#66503C", "#FFFFFF"),
+                5: ("#FFC0CB", "#B19CD9", "#80CED7", "#FFB6C1"),
+                6: ("#191970", "#4682B4", "#87CEFA", "#FFFFFF"),
+                7: ("#FFD700", "#FFA500", "#FF4500", "#FFFFFF"),
+                8: ("#FCE4EC", "#F8BBD0", "#F48FB1", "#FFFFFF"),
+                9: ("#FF0000", "#FF7F00", "#FFFF00", "#00FF00")
+            }
+
+            palette = color_palettes.get(number, None)
+            global BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR
+            BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR = palette
+
+        def set_random_color_palette():
+            global BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR
+            BACKGROUND_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            BOARD_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            PLAYER1_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            PLAYER2_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            with open("random_color_palettes.txt", "a") as f:
+                f.write(f'("{BACKGROUND_COLOR}", "{BOARD_COLOR}", "{PLAYER1_COLOR}", "{PLAYER2_COLOR}")\n') 
+
         if number == '?':
             # Set random color palette
-            self.set_random_color_palette()
+            set_random_color_palette()
         elif number.isdigit() and 0 <= int(number) <= 9:
             # Set specific color palette based on number
-            self.set_specific_color_palette(int(number))
-
-    def set_specific_color_palette(self, number):
-        color_palettes = {
-            0: ("#003366", "#66CCFF", "#FF6600", "#FFFFFF"),
-            1: ("#00563F", "#8FB339", "#FFD700", "#FFFFFF"),
-            2: ("#FF6F61", "#FFD166", "#6B5B95", "#FFFFFF"),
-            3: ("#6A0572", "#AB83A1", "#3C1053", "#FFFFFF"),
-            4: ("#D9BF77", "#A89F68", "#66503C", "#FFFFFF"),
-            5: ("#FFC0CB", "#B19CD9", "#80CED7", "#FFB6C1"),
-            6: ("#191970", "#4682B4", "#87CEFA", "#FFFFFF"),
-            7: ("#FFD700", "#FFA500", "#FF4500", "#FFFFFF"),
-            8: ("#FCE4EC", "#F8BBD0", "#F48FB1", "#FFFFFF"),
-            9: ("#FF0000", "#FF7F00", "#FFFF00", "#00FF00")
-        }
-
-        palette = color_palettes.get(number, None)
-        global BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR
-        BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR = palette
-
-    def set_random_color_palette(self):
-        global BACKGROUND_COLOR, BOARD_COLOR, PLAYER1_COLOR, PLAYER2_COLOR
-        BACKGROUND_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
-        BOARD_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
-        PLAYER1_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
-        PLAYER2_COLOR = "#{:06x}".format(random.randint(0, 0xFFFFFF))
-        with open("random_color_palettes.txt", "a") as f:
-            f.write(f'("{BACKGROUND_COLOR}", "{BOARD_COLOR}", "{PLAYER1_COLOR}", "{PLAYER2_COLOR}")\n') 
-        
+            set_specific_color_palette(int(number))
+            
     def set_window_dimensions(self, rows: int, columns: int):
         screen_width = 800
         screen_height = 600

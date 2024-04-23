@@ -1,5 +1,5 @@
 import pygame
-from GameSetup import white_black_division
+from GameSetup import GameSetup
 from GameUI import GameUI
 from Gameset import Gameset
 from UserSupervisor import string_input
@@ -11,7 +11,7 @@ class GameFlow:
         self.white_bot = white_bot
         self.black_bot = black_bot
         self.running = True
-        self.white_pieces, self.black_pieces = white_black_division(self.game.board)
+        self.white_pieces, self.black_pieces = GameSetup.white_black_division(game.board)
     
     def play_game(self, maximum_moves=-1):
         ui = GameUI(self.game.board)

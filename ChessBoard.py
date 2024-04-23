@@ -1,10 +1,9 @@
-import logging
 import copy
+import logging
 from typing import Optional
-from ChessBoardPiece import ChessBoardPiece
 from ChessPiece import ChessPiece
 from PieceMapping import PieceMapping
-import copy
+from ChessBoardPiece import ChessBoardPiece
 
 
 class ChessBoard:

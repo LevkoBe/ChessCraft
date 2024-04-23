@@ -4,14 +4,13 @@ from typing import Optional
 from Gameset import Gameset
 from TrainingFlow import TrainingFlow
 
-class GeneticAlgorithm:
+class GeneticAlgorithmTraining:
     def __init__(self, initial_gameset: Gameset, filename: Optional[str], num_games_in_generation: int = 10, num_best_children: int = 5, mutation_rate: float = 110.2):
         self.initial_gameset = copy.deepcopy(initial_gameset)
         self.num_games_in_generation = num_games_in_generation
         self.num_best_children = num_best_children
         self.mutation_rate = mutation_rate
-        self.original_coefficients = initial_gameset.white_coefficients
-        self.evaluation_scores = []
+        self.evaluation_scores: list[tuple[TrainingFlow, float]] = []
         self.generation_count = 0  # Initialize generation count
         self.filename = filename
 
@@ -36,7 +35,7 @@ class GeneticAlgorithm:
 
     def log_black_win(self, generation_count):
         with open("generation_logs.txt", "a") as f:
-            f.write(f"generation #{generation_count}: black won\n")
+            f.write(f"generation #{generation_count - 1}: black won\n")
 
     def log_generation_info(self, position_evaluation, coefficients):
         rounded_coeffs = tuple([round(coeff, 2) for coeff in coefficients])  # Round coefficients to hundredths

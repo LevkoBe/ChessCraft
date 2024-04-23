@@ -1,6 +1,5 @@
 import json
 import re
-from typing import List, Tuple
 from Move import Move
 
 def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
@@ -8,10 +7,10 @@ def is_valid_position(row:int, col:int, rows: int, cols: int) -> bool:
 
 
 class ChessPiece:
-    def __init__(self, name: str, symbol: str, moves: List[str], max_steps: str, optional: List[str], max_cells_reachable: int = 0, value: int = 0):
+    def __init__(self, name: str, symbol: str, moves: list[str], max_steps: str, optional: list[str], max_cells_reachable: int = 0, value: int = 0):
         self.name = name
         self.symbol = symbol
-        self.moves: List[Move] = self.get_moves(moves)
+        self.moves: list[Move] = self.get_moves(moves)
         self.max_steps: int = int(max_steps)
         self.max_cells_reachable = max_cells_reachable
         self.value: int = value
@@ -98,8 +97,8 @@ class ChessPiece:
         ) = (optional_str.find(c) != -1 for c in 'xnydlfscg+pveiu?rort!')
         return piece
 
-    def get_moves(self, moves_list: List[str]) -> List[Tuple[int, int]]:
-        moves: List[Move] = []
+    def get_moves(self, moves_list: list[str]) -> list[tuple[int, int]]:
+        moves: list[Move] = []
         for moves_string in moves_list:
             if len(moves_string) == 2:
                 # format: ".." with '+', '-', or '0' representing (vertical, horizontal) moves 'forward', 'backward', and 'none'
@@ -118,7 +117,7 @@ class ChessPiece:
                 moves.append(Move(move_tuple[0], move_tuple[1], moving, capturing))
         return moves
 
-    def calculate_reachable_cells(self, position: Tuple[int, int], rows:int , columns: int) -> int :
+    def calculate_reachable_cells(self, position: tuple[int, int], rows:int , columns: int) -> int :
         row, column = position
         if not is_valid_position(row, column, rows, columns):
             return 0

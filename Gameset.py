@@ -3,8 +3,8 @@ import random
 from ChessBoard import ChessBoard
 from ChessPiece import ChessPiece
 from PieceMapping import PieceMapping
-from GameSetup import setup_board, setup_pieces
-from UserSupervisor import list_input, string_input
+from GameSetup import GameSetup
+from UserSupervisor import list_input
 
 class Gameset:
     def __init__(self, pieces=None, board=None):
@@ -37,11 +37,11 @@ class Gameset:
             self.black_coefficients = tuple(randomized_coefficients)
 
     def create_game(self):
-        rows = int(string_input("Please enter the number of rows: ", "regex", options=r"^\d+$"))
-        columns = int(string_input("Please enter the number of columns: ", "regex", options=r"^\d+$"))
-        self.pieces: list[ChessPiece] = setup_pieces(rows, columns)
-        self.board: ChessBoard = setup_board(rows, columns, [p.symbol for p in self.pieces])
-        self.piece_mapping.set_all_pieces(self.pieces)
+        game_setup = GameSetup()
+        game_setup.setup_board()
+        self.pieces: list[ChessPiece] = game_setup.setup_pieces()
+        self.board: ChessBoard = game_setup.fill_board()
+        self.piece_mapping.set_all_pieces(game_setup.pieces)
         self.set_specials()
 
     def set_specials(self):
