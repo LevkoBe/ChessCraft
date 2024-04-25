@@ -7,9 +7,10 @@
 3. [Game Concept](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#game-concept)
 4. [Installation](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#installation)
 5. [Usage](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#usage)
-6. [Contribution Guidelines](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#contribution-guidelines)
-7. [Next Steps](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#next-steps)
-8. [About the Authors](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#about-the-authors)
+6. [Demo video](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#demo-video)
+7. [Contribution Guidelines](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#contribution-guidelines)
+8. [Next Steps](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#next-steps)
+9. [About the Authors](https://github.com/LevkoBe/ChessCraft/blob/graphics/README.md#about-the-authors)
 
 ## **Introduction**
 
@@ -100,6 +101,14 @@ Or to load some of the existing games, enter `load`, and then type some name of 
 4. Play against another player, challenge the AI bot, or watch bot-vs-bot matches to observe different strategies in action. If you want, you can change the mode in the `main.cpp` file before the game.
 5. Utilize cheat codes for hints, save/load games, and set color palettes for a personalized gaming experience. Palettes can be set with pressing any number from `0` to `9`, or with `?` you can get some random one. Some cheatcodes can be `hint`, `eval`, or `quit`.
 6. Experiment with different game setups, train AI bots to improve their strategies, and enjoy the endless possibilities offered by ChessCraft!
+
+## **Demo video**
+
+Below, you'll find a video that showcases the processes of creation and loading of games in ChessCraft.
+
+
+https://github.com/LevkoBe/ChessCraft/assets/118983753/c4e52da3-80ca-4263-9e99-b7a5f01704e8
+
 
 ## **Contribution Guidelines**
 
