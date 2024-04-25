@@ -27,7 +27,7 @@ ChessCraft is structured around a modular architecture consisting of several cor
 
 You can see more details on the class diagram below (click to upscale):
 
-https://github.com/LevkoBe/ChessCraft/assets/118983753/496f2f24-7667-44b1-b999-30d21b908e79
+![image](https://github.com/LevkoBe/ChessCraft/assets/118983753/496f2f24-7667-44b1-b999-30d21b908e79)
 
 ## **Game Concept**
 
@@ -47,11 +47,11 @@ To understand the program even better, see the diagrams below (click on the imag
 
 Use-case diagram:
 
-https://github.com/LevkoBe/ChessCraft/assets/118983753/fd007d43-f13b-4739-8953-c9b529dcd561
+![image](https://github.com/LevkoBe/ChessCraft/assets/118983753/fd007d43-f13b-4739-8953-c9b529dcd561)
 
 State diagram:
 
-https://github.com/LevkoBe/ChessCraft/assets/118983753/acf89432-762f-42e7-8059-cde1ef10e243
+![image](https://github.com/LevkoBe/ChessCraft/assets/118983753/acf89432-762f-42e7-8059-cde1ef10e243)
 
 You can also review the [presentation](https://www.canva.com/design/DAGCfR5YdRo/_uuWHMq1nkiyPIJXt8NGwA/edit?utm_content=DAGCfR5YdRo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) about the game.
 
