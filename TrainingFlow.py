@@ -1,4 +1,4 @@
-from GameSetup import white_black_division
+from GameSetup import GameSetup
 from Gameset import Gameset
 
 
@@ -6,7 +6,7 @@ class TrainingFlow:
     def __init__(self, game: Gameset):
         self.game = game
         self.running = True
-        self.white_pieces, self.black_pieces = white_black_division(self.game.board)
+        self.white_pieces, self.black_pieces = GameSetup.white_black_division(game.board)
     
     def play_game(self, maximum_moves=-1):
         moves_played = 0
